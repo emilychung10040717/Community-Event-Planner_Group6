@@ -102,7 +102,7 @@ describe('Update Function Test', () => {
       expFinDate : '2026-07-17T00:00:00.000+00:00', 
       expFinTime : '17:17', 
       description: 'Join us to celebrate for Wonwoo', 
-      save: sinon.stub().resolvesThis() // ← 模擬 save
+      save: sinon.stub().resolvesThis() // ← simulation for save
                             // Mock save method
     };
     // Stub Event.findById to return mock event      //avoid to connect to the real DB

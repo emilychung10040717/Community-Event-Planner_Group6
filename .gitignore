@@ -1,16 +1,16 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# 忽略所有層級的 node_modules
+# Ignore all levels of node_modules
 node_modules/
 **/node_modules/
 
-# 忽略環境變數與編譯檔
+# Ignore environment variables and build files
 .env
 backend/.env
 frontend/.env
 build/
 dist/
 
-# 忽略作業系統雜項
+# Ignore operating system clutter
 .DS_Store
 Thumbs.db

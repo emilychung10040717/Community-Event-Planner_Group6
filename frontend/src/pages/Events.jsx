@@ -5,9 +5,8 @@ import EventForm from '../components/EventForm';
 //import { useAuth } from '../context/AuthContext';
 
 const Events = () => {
-  //const { user } = useAuth();
   const [events, setEvents] = useState([]);
-  // const [editingEvent, setEditingEvent] = useState(null);
+
 
 
   return (
@@ -18,7 +17,7 @@ const Events = () => {
         editingEvent={null}
         setEditingEvent={()=>{}}
       />
-      {/* <EventList events={events} setEvents={setEvents} setEditingEvent={setEditingEvent} />  */}
+
     </div>
   );
 };

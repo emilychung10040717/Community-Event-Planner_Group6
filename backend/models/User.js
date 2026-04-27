@@ -11,7 +11,6 @@ const userSchema = new mongoose.Schema({
         type: String, 
         required: true, 
         enum: ['member', 'eventorganizer', 'admin'],
-        //default: 'eventorganizer' 
     },
     password: { type: String, required: true },
 });

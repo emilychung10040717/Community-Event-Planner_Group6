@@ -5,7 +5,7 @@ import axiosInstance from '../axiosConfig';
 
 
 const Login = () => {
-  const [formData, setFormData] = useState({ email: '', password: '', role:'' });   //0411
+  const [formData, setFormData] = useState({ email: '', password: '', role:'' });   
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -24,15 +24,16 @@ const handleChange = (e) => {
     if (!formData.role) {
     alert("Please select your login role (Member or Organizer).");
     return;
+    
   }
     try {
       const response = await axiosInstance.post('/api/auth/login', formData);
 
       //check error
-      console.log('--- 登入成功回應 ---');
-      console.log('所選角色 (role):', formData.role);
-      console.log('後端回傳使用者角色:', response.data.role);
-      console.log('後端回傳 User ID:', response.data.id);  
+      console.log('--- Login response successfully ---');
+      console.log('The role is picked (role):', formData.role);
+      console.log('Backend returned user role:', response.data.role);
+      console.log('Backend returned User ID:', response.data.id);  
 
       login(response.data);
       if (response.data.role === "eventorganizer")
@@ -123,6 +124,7 @@ const handleChange = (e) => {
             className="w-full pl-24 pr-4 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all"
           />
         </div>
+        
         {/* forget passwoord */}
         {/* <div className="text-right">
           <a href="#" className="text-sm text-gray-600 hover:underline">Forgot Password?</a>

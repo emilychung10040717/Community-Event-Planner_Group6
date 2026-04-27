@@ -78,14 +78,14 @@ res.status(500).json({message:error.message});
 /* 取得單一活動 (Read Single) */
 const getEventById = async (req, res) => {
   try {
-    // 根據網址列傳過來的 ID 尋找
+    // Search for the ID 
     const event = await Event.findById(req.params.id);
     
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    // 安全檢查：確保這個活動屬於當前登入的使用者
+    // check if the event belongs to the logged-in user
     if (event.userId.toString() !== req.user.id) {
       return res.status(401).json({ message: "Not authorized" });    //0504update
     }
@@ -96,7 +96,5 @@ const getEventById = async (req, res) => {
   }
 };
 
-// 記得在匯出處加上它
 module.exports = { getEvents, addEvent, updateEvent, deleteEvent, getEventById };
 
-//module.exports={getEvents, addEvent, updateEvent, deleteEvent};

@@ -26,15 +26,14 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
     const { email, password, role } = req.body;
-    //const isMatch = await bcrypt.compare(password, user.password);
     try {
         const user = await User.findOne({ email }).select('+password');
-        // console.log('--- 登入除錯資訊 ---');
-        // console.log('前端傳來的密碼 (password):', password);
-        // console.log('資料庫抓到的使用者 (user):', user ? '有找到' : '沒找到');
-        // console.log('資料庫抓到的使用者 (user):', user._id ? '有找到' : '沒找到', user._id);
+        // console.log('--- Login information of log ---');
+        // console.log('Password from frontend (password):', password);
+        // console.log('User found in database (user):', user ? 'Found' : 'Not found');
+        // console.log('User ID (user._id):', user._id ? 'Found' : 'Not found', user._id);
         // if (user) {
-        //     console.log('資料庫裡的加密密碼 (user.password):', user.password);
+        //     console.log('Encrypted password (user.password):', user.password);
         // }
         // console.log('--------------------');
         if (user && (await bcrypt.compare(password, user.password))) {
@@ -42,8 +41,8 @@ const loginUser = async (req, res) => {
             if (role && user.role !== role) {
                 return res.status(401).json({ message: `Access denied: You are not a ${role}` });
             }
-            //console.log('資料庫抓到的使用者 (user):', user.role ? '有找到' : '沒找到',user.role);
-            //console.log('資料庫傳入角色 (role):', role ? '有找到' : '沒找到',role);
+            //console.log('User found in database (user):', user.role ? 'Found' : 'Not found',user.role);
+            //console.log('Role passed (role):', role ? 'Found' : 'Not found',role);
             res.json({ 
                 id: user.id, 
                 email: user.email, 

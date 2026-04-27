@@ -69,8 +69,8 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
             headers: { Authorization: `Bearer ${user.token}` },
             "Content-Type": "application/json" 
         };
-        console.log('--- 登入除錯資訊 ---');
-        console.log('資料庫抓到的使用者 (user):', user._id ? '有找到' : '沒找到', user._id);
+        console.log('--- Login information of logged-in user ---');
+        console.log('User from database (user):', user._id ? 'Found' : 'Not found', user._id);
 
         if (editingEvent && editingEvent._id) {
             const response = await axiosInstance.put(`/api/events/${editingEvent._id}`, dataToSubmit, config);
@@ -86,7 +86,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
             
             // 
             if (!dataToSubmit.userId) {
-                console.error('❌ 警告：userId 是空的！後端可能會拒絕這個請求。');
+                console.error('❌ Error: userId is empty! The backend might reject this request.');
             }
 
             // 
@@ -112,43 +112,6 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
     }
 };
 
-
-//   //original
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     console.log("Submitting form data:", formData); // 🔹確認前端送出的資料
-//     try {
-//       if (editingEvent) {
-//         const response = await axiosInstance.put(`/api/events/${editingEvent._id}`, formData, {      //0330 fix
-//           headers: { Authorization: `Bearer ${user.token}`,'Content-Type': 'multipart/form-data' },
-//         });
-//           alert("Event Updated!");
-//         setEvents(events.map((event) => (event._id === response.data._id ? response.data : event)));
-//       } else {
-//         const response = await axiosInstance.post('/api/events', formData, {
-//           headers: { Authorization: `Bearer ${user.token}` },
-//         });
-//           alert("Event added!")
-//         setEvents([...events, response.data]);
-//       }
-//       setEditingEvent(null);
-//       setFormData({ title: '', capacity: '', organizer : '', category: '', ticketRequired : '', ageRestriction : '', 
-//         suburb : '', location : '', expStartDate : '', expStartTime : '', expFinDate : '', expFinTime : '', description: '', image: '' });
-//     } catch (error) {
-//       alert('Failed to save event.');
-//     }
-//   };
-//   // // 提取重置邏輯，保持程式碼整潔
-// const resetForm = () => {
-//     setEditingEvent(null);
-//     setFormData({ 
-//         title: '', capacity: '', organizer : '', category: '', 
-//         ticketRequired : 'false', ageRestriction : 'false', 
-//         suburb : '', location : '', expStartDate : '', 
-//         expStartTime : '', expFinDate : '', expFinTime : '', 
-//         description: '',
-//     });
-// };
 
   return (
     <form onSubmit={handleSubmit} className="max-w-8xl mx-auto bg-white p-10 rounded-[3rem] shadow-sm mb-6 border border-gray-100">
@@ -336,6 +299,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
           />
         </div>
 
+        {/* Function for upload image (need to be fixed later)*/}
         {/* <div className="space-y-2">
           <label htmlFor="image" className="block text-gray-700 font-medium ml-1">Upload Image</label>
           <input

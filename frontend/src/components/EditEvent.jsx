@@ -8,7 +8,7 @@ const EditEvent = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   
-  // 1. 欄位務必與 Create Event 的 formData 結構完全一致
+
   const [formData, setFormData] = useState({
     title: '', capacity: '', organizer: '', category: '', 
     ticketRequired: false, ageRestriction: false, suburb: '', 
@@ -30,7 +30,6 @@ const EditEvent = () => {
           headers: { Authorization: `Bearer ${user.token}` }
         });
 
-        // 2. 關鍵修正：將後端資料映射到前端狀態，並處理日期格式
         const event = response.data;
         
         setFormData({
@@ -42,7 +41,6 @@ const EditEvent = () => {
           ageRestriction: event.ageRestriction ?? false,
           suburb: event.suburb || '',
           location: event.location || '',
-          // have to transfer date format into YYYY-MM-DD
           expStartDate: formatDate(event.expStartDate),
           expStartTime: event.expStartTime || '',
           expFinDate: formatDate(event.expFinDate),
@@ -61,25 +59,8 @@ const EditEvent = () => {
     if (id && user?.token) fetchSingleEvent();
   }, [id, user]);
 
-  // /*original*/
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     // 這裡使用 multipart/form-data 如果你有處理圖片上傳
-  //     await axiosInstance.put(`/api/events/${id}`, formData, {
-  //       headers: { 
-  //         Authorization: `Bearer ${user.token}`,
-  //         'Content-Type': 'application/json' 
-  //       }
-  //     });
-  //     alert("Update Successful! ✨");
-  //     navigate('/viewevent'); 
-  //   } catch (error) {
-  //     alert("Update Failed.");
-  //   }
-  // };
+  
 
-  /*test*/
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -87,8 +68,6 @@ const EditEvent = () => {
       const payload = {
         ...formData,
         capacity: Number(formData.capacity), // string → number
-        // ticketRequired: String(formData.ticketRequired) === 'true', // string → boolean
-        // ageRestriction: String(formData.ageRestriction) === 'true', // string → boolean
         ticketRequired: formData.ticketRequired === 'Yes', // string → boolean
         ageRestriction: formData.ageRestriction === '18+', // string → boolean
         expStartDate: new Date(formData.expStartDate), // string → Date
@@ -305,7 +284,7 @@ const EditEvent = () => {
                 />
                 </div>
 
-                
+              {/*  function for upload image (need to be fixed later)*/}
                 {/* <div className="space-y-2">
                 <label htmlFor="image" className="block text-gray-700 font-medium ml-1">Upload Image</label>
                 <input
