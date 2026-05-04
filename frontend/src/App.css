@@ -25,7 +25,7 @@
 }
 
 .App-link {
-  color: #61dafb;
+  color: #79d9f4;
 }
 
 @keyframes App-logo-spin {
@@ -34,5 +34,183 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+
+
+/*0428*/
+
+.browse-container {
+  background-color: #f8f9fd;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* 頂部紫色區域 */
+.browse-header {
+  background: #9874ce;
+  padding: 40px 20px;
+  border-radius: 0 0 40px 40px;
+  margin: -20px -20px 30px -20px;
+}
+
+.search-bar {
+  background: rgba(220, 184, 233, 0.887);
+  border-radius: 20px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+}
+
+/* 活動網格 */
+.event-grid {
+  display: grid;
+  grid-template-cols: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 卡片主體 */
+.event-card {
+  background: white;
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+/* 日期標籤疊加 */
+.date-tag {
+  position: absolute;
+  top: 30px;
+  left: 15px;
+  background:#eae3f6;
+  padding: 8px 20px;
+  border-radius: 15px;
+  text-align: center;
+  z-index: 2;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.date-tag .day { display: block; font-weight: bold; color: #ff7e67; font-size: 1.6rem; }
+.date-tag .month { display: block; font-size: 1.2 rem; color: #888; text-transform: uppercase; }
+
+.card-image img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.card-content { padding: 20px; }
+
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.event-title { font-size: 1.2rem; margin: 0; color: #333; }
+
+.category-tag {
+  background: #ffedea;
+  color: #ff7e67;
+  font-size: 0.7rem;
+  padding: 4px 12px;
+  border-radius: 10px;
+}
+
+.info-row p { margin: 5px 0; color: #888; font-size: 0.9rem; }
+
+/* 按鈕樣式 */
+.card-actions { margin-top: 15px; }
+
+.btn-update {
+  background: rgba(175, 208, 241, 0.949);
+  border: 1px solid #d0dffb;
+  color: #78a8fa;
+  padding: 8px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.btn-register {
+  background: #82d8b0;
+  border: none;
+  color: white;
+  padding: 8px 25px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.btn-view {
+  background: white;
+  border: 1px solid #eee;
+  color: #bbb;
+  padding: 8px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+
+
+/*hamburger for navbar
+/* 全螢幕遮罩的基本樣式 */
+.overlay {
+  height: 50%;
+  width: 50%;
+  position: fixed; /* 固定在螢幕上 */
+  z-index: 100; /* 確保在最上層 */
+  top: 0;
+  left: 0;
+  background-color: rgba(125, 90, 148, 0.95); /* 你的主題紫色 */
+  overflow-x: hidden;
+  transition: 0.5s; /* 動態過渡時間 */
+}
+
+/* 內容區塊排版 */
+.overlay-content {
+  position: relative;
+  top: 25%; /* 垂直置中 */
+  width: 100%;
+  text-align: center;
+  margin-top: 30px;
+}
+
+/* 選單連結樣式 */
+.overlay a {
+  padding: 8px;
+  text-decoration: none;
+  font-size: 36px;
+  color: #ffffff;
+  display: block; /* 讓連結變成整行 */
+  transition: 0.3s;
+}
+
+/* 滑鼠懸停效果 */
+.overlay a:hover, .overlay a:focus {
+  color: #f1f1f1;
+  transform: scale(1.1); /* 稍微放大 */
+}
+
+/* 關閉按鈕位置 */
+.overlay .closebtn {
+  position: absolute;
+  top: 20px;
+  right: 45px;
+  font-size: 60px;
+  cursor: pointer;
+}
+
+/* 當螢幕高度太小時，調整字體大小 */
+@media screen and (max-height: 450px) {
+  .overlay a {font-size: 20px}
+  .overlay .closebtn {
+    font-size: 40px;
+    top: 15px;
+    right: 35px;
   }
 }

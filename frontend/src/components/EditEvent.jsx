@@ -82,7 +82,7 @@ const EditEvent = () => {
       });
 
       alert("Update Successful! ✨");
-      navigate('/viewevent'); 
+      navigate('/view-events'); 
     } catch (error) {
       console.error(error);
       alert("Update Failed.");
@@ -102,7 +102,7 @@ const EditEvent = () => {
       </div>
 
 
-        <Link to="/viewevent" className="flex items-center text-[#8A60A1] mb-6 hover:opacity-70 transition-all">
+        <Link to="/view-events" className="flex items-center text-[#8A60A1] mb-6 hover:opacity-70 transition-all">
           <span className="mr-2 text-xl">←</span> View Event List
         </Link>
 

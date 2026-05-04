@@ -28,7 +28,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
         expFinDate : editingEvent.expFinDate,
         expFinTime : editingEvent.expFinTime,
         description: editingEvent.description,
-        image: null,
+        //image: editingEvent.image,
       });
      
       //result to default
@@ -94,7 +94,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
             
             console.log('3. Backend Response:', response.data); 
             alert("Event added!");
-            navigate('/viewevent');
+            navigate('/view-events');
             // 
             setEvents([...events, response.data]); 
         }
@@ -120,7 +120,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
       </div>
       {/* button for return back*/}
       <Link 
-        to="/ViewEvent"
+        to="/view-events"
         className="flex items-center text-purple-400 mb-8 hover:text-purple-600 transition-colors">
         <span className="mr-2">←</span> View Event
       </Link>

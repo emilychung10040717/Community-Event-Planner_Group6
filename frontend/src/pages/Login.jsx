@@ -17,35 +17,37 @@ const handleChange = (e) => {
   }));
 };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // check if choose the role
-    if (!formData.role) {
-    alert("Please select your login role (Member or Organizer).");
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  if (!formData.role) {
+    alert("Please select your login role.");
     return;
-    
   }
-    try {
-      const response = await axiosInstance.post('/api/auth/login', formData);
 
-      //check error
-      console.log('--- Login response successfully ---');
-      console.log('The role is picked (role):', formData.role);
-      console.log('Backend returned user role:', response.data.role);
-      console.log('Backend returned User ID:', response.data.id);  
+  try {
+    const userData = await login(formData);
+    
+    //  (Strategy Pattern)
+    const roleRoutes = {
+      "eventorganizer": "/",
+      "member": "/",
+      "admin": "/admin" 
 
-      login(response.data);
-      if (response.data.role === "eventorganizer")
-        navigate('/events');
-      else if (response.data.role === "member")
-        navigate("/profile");
-    } catch (error) {
-      console.error('Login Error:', error.response?.data || error.message);
-      alert('Login failed. Please try again.');
+    };
+    navigate(roleRoutes[userData.role] || "/");
+
+  } catch (err) {
+    
+    switch (err.message) {
+      case "GMAIL_NOT_FOUND or INVALID_PASSWORD":
+        alert("Email or Password is incorrect. Please check it again.");
+        break;
+      default:
+        alert("Login failed. Please try again.");
     }
-  };
-
+  }
+};
   return (
     <div className="max-w-md mx-auto mt-20">
       <div className="flex justify-center mb-10">
@@ -95,7 +97,24 @@ const handleChange = (e) => {
         </span>
       </label>
     </div>
-    
+    {/* Role：Admin */}
+    <div >  {/*visualization for disabled status*/}   {/*className="opacity-50 cursor-not-allowed"*/}
+      <label className="flex items-center space-x-2">
+        <input
+          type="radio"
+          name="role"
+          value="admin"
+          checked={formData.role === "admin"}
+          onChange={handleChange} 
+          className="w-4 h-4 accent-purple-400"
+          //disabled          // disable the functionality
+        />
+        <span className="text-gray-400 text-sm font-light leading-none">
+          I'm Admin <br/>
+          {/*<span className="text-xs text-red-300">[Not available now]</span>*/}
+        </span>
+      </label>
+    </div>
   </div>
 </div>
  
@@ -130,20 +149,19 @@ const handleChange = (e) => {
           <a href="#" className="text-sm text-gray-600 hover:underline">Forgot Password?</a>
         </div> */}
 
-        <div className="text-left">
+        {/*<div className="text-left">
           <label className="flex items-center space-x-2">
           <input
             type="radio"
             name="userType"
             className="w-4 h-4 accent-purple-400"
-            disabled           // diable for the functionality
+            //disabled           // diable for the functionality
           />
           <span className="text-gray-400 text-sm font-light leading-none">
             I'm ADMIN <br/>
-            <span className="text-xs text-red-300">[Not available now]</span>
           </span>
           </label>
-        </div>
+        </div>*/}
 
         {/* Login Button*/}
         <button

@@ -1,10 +1,43 @@
 import React, { createContext, useState, useContext } from 'react';
-
+import axiosInstance from '../axiosConfig';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
+
+  const login = async (loginData) => {
+    try{
+      const response = await axiosInstance.post('/api/auth/login', loginData);
+      setUser(response.data);
+      return response.data;
+    } catch (error) {
+      console.log("Axios Error Status:", error.response?.status);
+      console.log("Axios Error Data:", error.response?.data);
+      if (error.response) {
+        const{status} = error.response;
+        if (status === 404 || status === 401) {   
+          throw new Error("GMAIL_NOT_FOUND or INVALID_PASSWORD");
+        } 
+      }
+      throw new Error("LOGIN_FAILED");
+    };
+  };
+
+  const logout = () => {
+    setUser(null);
+  };
+  
+  return(
+      <AuthContext.Provider value={{ user, login, logout }}>
+        {children}
+      </AuthContext.Provider> 
+  );
+};
+export const useAuth = () => useContext(AuthContext);
+
+
+</*
   const login = (userData) => {
     setUser(userData);
   };
@@ -19,5 +52,4 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
-export const useAuth = () => useContext(AuthContext);
+*/></>

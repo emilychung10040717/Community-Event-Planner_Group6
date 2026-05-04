@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 const eventSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    //eventId: {type: mongoose.Schema.Types.ObjectId, ref: 'Event', required: true},   //0428  
     title: { type: String, required: true },
     capacity : {type: Number, required: true},
     organizer : {type: String, required: true},
@@ -16,7 +17,8 @@ const eventSchema = new mongoose.Schema({
     expFinDate: { type: Date , required: true},
     expFinTime: { type: String , required: true},
     description: { type: String },
-    // image: {type:String},
+    image: {type: String},
+    //numerParticipant: {type: int },
    
 });
 

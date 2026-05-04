@@ -3,8 +3,8 @@
 const Event = require('../models/Event');
 const getEvents = async (req , res) => {
 try{
-const events = await Event.find ({userId: req.user.id});           
-//const events = await Event.find ({userId: '69cf7fefa3cead5a6cada6be'});
+//const events = await Event.find ({userId: req.user.id});          //original
+const events = await Event.find ({});                        //0428
 res.json(events);
 } catch (error) {
 res.status(500).json({message: error.message});
@@ -41,6 +41,11 @@ try{
 const event = await Event.findById(req.params.id);
 if (!event) return res.status(404).json({message: "Event not found"});
 
+// 權限檢查：只有該活動的主辦人可以修改
+if (event.userId.toString() !== req.user.id) {
+  return res.status(401).json({ message: "Not authorized to update this event" });
+}
+
 event.title = title || event.title;
 event.capacity = capacity || event.capacity;
 event.organizer = organizer || event.organizer;
@@ -75,7 +80,7 @@ res.status(500).json({message:error.message});
 }
 };
 
-/* 取得單一活動 (Read Single) */
+/* (Read Single) */
 const getEventById = async (req, res) => {
   try {
     // Search for the ID 
@@ -96,5 +101,22 @@ const getEventById = async (req, res) => {
   }
 };
 
-module.exports = { getEvents, addEvent, updateEvent, deleteEvent, getEventById };
+
+/* (Read Single - Public, no auth required) */
+const getEventByIdPublic = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    res.json(event);  // 直接回傳，不做 user 權限檢查
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { getEvents, addEvent, updateEvent, deleteEvent, getEventById, getEventByIdPublic };
+
 

@@ -94,6 +94,23 @@ const Register = () => {
             </span>
           </label>
         </div>
+
+        {/* Role：Admin */}
+        <div>
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input
+              type="radio"
+              name="role"
+              className="w-4 h-4 accent-purple-400"
+              value = "admin"
+              checked = {formData.role === "admin"}
+              onChange={handleChange} 
+            />
+            <span className="text-gray-400 text-sm font-light leading-none">
+              I'm ADMIN
+            </span>
+          </label>
+        </div>
       </div>
     </div>
       {/*make a form for registration*/}

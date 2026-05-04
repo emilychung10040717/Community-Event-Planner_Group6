@@ -4,7 +4,7 @@ import EventForm from '../components/EventForm';
 // import EventList from '../components/EventList';
 //import { useAuth } from '../context/AuthContext';
 
-const Events = () => {
+const CreateEvents  = () => {
   const [events, setEvents] = useState([]);
 
 
@@ -22,7 +22,7 @@ const Events = () => {
   );
 };
 
-export default Events;
+export default CreateEvents;
 
 
 
