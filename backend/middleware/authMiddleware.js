@@ -22,5 +22,14 @@ const protect = async (req, res, next) => {
     }
 };
 
-module.exports = { protect };
+// 檢查是否為管理員的中間件
+const admin = (req, res, next) => {
+  // req.user 是在之前的 protect 中間件裡從資料庫抓出來並存進去的
+  if (req.user && req.user.role === 'admin') {
+    next(); // 是 admin，放行
+  } else {
+    res.status(403).json({ message: '權限不足，僅限管理員存取' });
+  }
+};
+module.exports = { protect,admin };
 

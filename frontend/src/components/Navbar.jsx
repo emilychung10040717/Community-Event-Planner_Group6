@@ -7,7 +7,7 @@ const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false); // controly overlay
-   const handleSearch = (e) => {
+  const handleSearch = (e) => {
   const value = e.target.value;
   setSearchTerm(value);
   navigate(`/?search=${value}`);
@@ -27,7 +27,7 @@ const Navbar = () => {
   return (
     <>
       {/* Full-screen overlay menu for mobile */}
-      <div className={`fixed inset-0 bg-black bg-opacity-90 z-50 transition-all duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+      <div className={`fixed inset-0 bg-black bg-opacity-90 z-50 transition-all duration-300 ${isOpen ? 'opacity-90 visible' : 'opacity-0 invisible'}`}>
         <button className="absolute top-5 right-10 text-6xl text-white" onClick={toggleNav}>&times;</button>
         <div className="flex flex-col items-center justify-center h-full space-y-8 text-white text-3xl">
           
@@ -42,7 +42,9 @@ const Navbar = () => {
                 <Link to="/view-events" onClick={toggleNav}>Event List</Link>
                 </>
             )}
-
+            {user?.role === 'admin' && (
+                <Link to="/Admin" className="mr-4 hover:text-purple-200">DashBoard</Link>
+            )}            
             </>
           ): (
             <>
@@ -52,11 +54,10 @@ const Navbar = () => {
             </>
           )
           }
-
         </div>
       </div>
 
-      <nav className="bg-[#7D5A94] text-white p-4 flex justify-between items-center fixed top-0 left-0 right-0 z-40">
+      <nav className="bg-[#7D5A94] text-white p-4 flex justify-between items-center sticky top-0 left-0 right-0 z-40">
         <div className="flex items-center">
           {/*Hamburger */}
           <button onClick={toggleNav} className="mr-4 text-2xl md:hidden">☰</button>
@@ -68,8 +69,13 @@ const Navbar = () => {
         <div className="flex items-center">
           {user ? (
             <>
-              <Link to ="/" className="mr-4 hover:text-purple-200">Home</Link>
+                {user.role !== 'admin' && (
+            <>
+              <Link to="/" className="mr-4 hover:text-purple-200">Home</Link>
               <Link to="/profile" className="mr-4 hover:text-purple-200">Profile</Link>
+            </>
+          )}
+    
               
               {/* only organizer can see function: New & List */}
               {user.role === 'eventorganizer' && (
@@ -88,7 +94,12 @@ const Navbar = () => {
                   className="mr-4 px-3 py-1 rounded-xl text-gray-800 bg-purple-100 outline-none"
                 />
               )}
-              <button
+
+              {user?.role === 'admin' && (
+                <Link to="/Admin" className="mr-4 hover:text-purple-200">DashBoard</Link>
+              )}
+
+              <button 
                 onClick={handleLogout}
                 className="bg-red-400 px-4 py-2 rounded-2xl hover:bg-red-600 transition-colors"
               >

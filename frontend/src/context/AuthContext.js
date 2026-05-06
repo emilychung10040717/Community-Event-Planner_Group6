@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
     try{
       const response = await axiosInstance.post('/api/auth/login', loginData);
       setUser(response.data);
+      localStorage.setItem('userInfo', JSON.stringify(response.data)); // ✅ 加這行
       return response.data;
     } catch (error) {
       console.log("Axios Error Status:", error.response?.status);
@@ -26,6 +27,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('userInfo'); // ✅ 加這行
   };
   
   return(

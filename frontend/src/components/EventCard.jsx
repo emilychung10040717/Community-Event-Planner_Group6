@@ -13,6 +13,7 @@ const EventCard = ({ event, user, isRegistered, onCancelSuccess }) => {
 
 const defaultImage = categoryImages[event.category] || '/community.jpg';
 
+
   const eventDate = new Date(event.expStartDate);
   const day = eventDate.getDate();
   const month = eventDate.toLocaleString('en-US', { month: 'short' });
@@ -29,6 +30,8 @@ const defaultImage = categoryImages[event.category] || '/community.jpg';
       alert(error.response?.data?.message || "Cancel failed");
     }
   };
+
+
 
   return (
     <div className="event-card">
