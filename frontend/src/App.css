@@ -42,6 +42,7 @@
 /*0428*/
 
 .browse-container {
+  padding-top: 80px;
   background-color: #f8f9fd;
   min-height: 100vh;
   padding: 20px;
@@ -66,7 +67,7 @@
 /* 活動網格 */
 .event-grid {
   display: grid;
-  grid-template-cols: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 25px;
   max-width: 1200px;
   margin: 0 auto;
@@ -80,6 +81,8 @@
   box-shadow: 0 10px 20px rgba(0,0,0,0.05);
   position: relative;
   transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 日期標籤疊加 */
@@ -104,7 +107,11 @@
   object-fit: cover;
 }
 
-.card-content { padding: 20px; }
+.card-content {   
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;}
 
 .title-row {
   display: flex;
@@ -126,7 +133,18 @@
 .info-row p { margin: 5px 0; color: #888; font-size: 0.9rem; }
 
 /* 按鈕樣式 */
-.card-actions { margin-top: 15px; }
+.card-actions { 
+  margin-top: auto;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.btn-view, .btn-register, .btn-update {
+  flex: 1;
+  text-align: center;
+}
 
 .btn-update {
   background: rgba(175, 208, 241, 0.949);
@@ -213,4 +231,26 @@
     top: 15px;
     right: 35px;
   }
+}
+/* My Upcoming Events 區塊 */
+.my-events-section {
+  background: linear-gradient(135deg, #f3e8ff, #ede0f7);
+  border-radius: 24px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.my-events-section h2 {
+  color: #7c3aed;
+}
+
+/* All Events 區塊 */
+.all-events-section {
+  background: white;
+  border-radius: 24px;
+  padding: 20px;
+}
+
+.all-events-section h2 {
+  color: #333;
 }

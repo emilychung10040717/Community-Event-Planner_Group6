@@ -7,6 +7,14 @@ const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false); // controly overlay
+   const handleSearch = (e) => {
+  const value = e.target.value;
+  setSearchTerm(value);
+  navigate(`/?search=${value}`);
+  };
+  const [searchTerm, setSearchTerm] = useState('');
+
+ 
 
   const handleLogout = () => {
     logout();
@@ -48,7 +56,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      <nav className="bg-[#7D5A94] text-white p-4 flex justify-between items-center relative z-10">
+      <nav className="bg-[#7D5A94] text-white p-4 flex justify-between items-center fixed top-0 left-0 right-0 z-40">
         <div className="flex items-center">
           {/*Hamburger */}
           <button onClick={toggleNav} className="mr-4 text-2xl md:hidden">☰</button>
@@ -71,6 +79,15 @@ const Navbar = () => {
                 </>
               )}
 
+              {user?.role === 'member' && (
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  placeholder="🔍 Search..."
+                  className="mr-4 px-3 py-1 rounded-xl text-gray-800 bg-purple-100 outline-none"
+                />
+              )}
               <button
                 onClick={handleLogout}
                 className="bg-red-400 px-4 py-2 rounded-2xl hover:bg-red-600 transition-colors"
