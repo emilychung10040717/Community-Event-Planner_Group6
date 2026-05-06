@@ -8,6 +8,7 @@ const EventDetails = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [event, setEvent] = useState();
+  const [isRegistered, setIsRegistered] = useState(false);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -15,12 +16,54 @@ const EventDetails = () => {
         console.log("the id of this event is:", id)
         const response = await axiosInstance.get(`/api/events/event-details/${id}`);
         setEvent(response.data);
+        const currentUserId = user?._id || user?.id;
+        const participants = response.data.participants || [];
+
+        console.log("participants:", participants);
+        console.log("currentUserId:", currentUserId);
+        console.log("alreadyRegistered:", participants.some(p => String(p) === String(currentUserId)));
+
+        const alreadyRegistered = participants.some(
+          p => String(p) === String(currentUserId)
+        );
+        setIsRegistered(alreadyRegistered);
       } catch (error) {
         console.error("Fetch error", error);
       }
     };
     if (id) fetchEvent();
-  }, [id]);
+  }, [id, user]);
+
+    const handleRegister = async () => {
+      try {
+        const response = await axiosInstance.post(
+          `/api/events/${event._id}/register`,
+          {},
+          { headers: { Authorization: `Bearer ${user.token}` } }
+        );
+        setEvent(response.data.event);
+        setIsRegistered(true);
+        alert("Successfully registered! 🎉");
+      } catch (error) {
+        alert(error.response?.data?.message || "Register failed");
+      }
+    };
+
+    const handleCancel = async () => {
+      try {
+        const response = await axiosInstance.delete(
+          `/api/events/${event._id}/register`,
+          { headers: { Authorization: `Bearer ${user.token}` } }
+        );
+        setEvent(response.data.event);
+        setIsRegistered(false);
+        alert("Registration cancelled.");
+      } catch (error) {
+        alert(error.response?.data?.message || "Cancel failed");
+      }
+    };
+
+
 
   // 重要：如果 event 還沒抓到，先回傳 Loading，避免後續讀取 event.title 報錯
   if (!event) {
@@ -36,22 +79,29 @@ const EventDetails = () => {
   console.log("user.role:", user?.role)
   console.log("id match:", String(user?._id) === String(event?.userId))
   return (
-    <div className="max-w mx-auto bg-white min-h-screen pb-10 shadow-lg relative">
+    <div className="max-w mx-auto bg-white min-h-screen pb-10 shadow-lg relative pt-20">
       {/* 1. 活動圖片 */}
       <div className="relative h-64 w-full">
+        {event.image ? (
         <img 
-          // 假設你的後端圖片靜態資料夾在 localhost:5005
-          //src={event.image ? `http://localhost:5005/${event.image}` : '/default-event.png'} 
+          src={event.image}
           alt={event.title} 
           className="w-full h-full object-cover"
         />
-
+      ) : (
+        <img
+          src={`/${event.category?.toLowerCase()}.jpg`}
+          alt={event.title}
+          className="w-full h-full object-cover"
+          onError={(e) => { e.target.src = '/community.jpg'; }}
+        />
+      )}
       </div>
 
       <div className="px-6 py-4">
         <button 
           onClick={() => navigate(-1)} 
-          className="absolute top-4 left-4 text-white flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-lg backdrop-blur-sm transition-hover hover:bg-black/60"
+           className="absolute top-20 left-4 text-gray-600 flex items-center gap-2 bg-white/80 px-3 py-1.5 rounded-lg shadow-sm hover:bg-white transition-all"
         >
           ← Back
         </button>
@@ -120,8 +170,11 @@ const EventDetails = () => {
 
             ) : ( user?.role === 'member'? (
               
-              <button className="w-full bg-[#73E58C] text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:bg-[#5db972] transition-all">
-                REGISTER NOW
+              <button 
+              onClick={isRegistered ? handleCancel : handleRegister}
+              className={`w-full ${isRegistered ? 'bg-[#B65DD8] hover:bg-[#9d4fbd]' : 'bg-[#73E58C] hover:bg-[#5db972]'} text-white py-4 rounded-2xl font-bold text-lg shadow-lg transition-all`}
+              >
+                {isRegistered ? 'CANCEL' : 'REGISTER NOW'}
               </button>
             ) : ( user?.role === 'eventorganizer'?(
               null

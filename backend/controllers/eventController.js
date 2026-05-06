@@ -116,7 +116,43 @@ const getEventByIdPublic = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+/* ########Register Event */
+const registerEvent = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) return res.status(404).json({ message: "Event not found" });
 
-module.exports = { getEvents, addEvent, updateEvent, deleteEvent, getEventById, getEventByIdPublic };
+    const userId = req.user._id;
+    if (!event.participants) event.participants = [];
+    if (event.participants.includes(userId)) {
+      return res.status(400).json({ message: "Already registered" });
+    }
+
+    event.participants.push(userId);
+    await event.save();
+    res.json({ message: "Registered successfully", event });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+/*####### Cancel Register Event */
+const cancelRegisterEvent = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) return res.status(404).json({ message: "Event not found" });
+
+    if (!event.participants) event.participants = [];
+    event.participants = event.participants.filter(
+      (p) => String(p) !== String(req.user._id)
+    );
+    await event.save();
+    res.json({ message: "Cancelled successfully", event });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { getEvents, addEvent, updateEvent, deleteEvent, getEventById, getEventByIdPublic, registerEvent, cancelRegisterEvent };
 
 

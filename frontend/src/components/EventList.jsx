@@ -1,6 +1,6 @@
 import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../axiosConfig';
-import { Link } from 'react-router-dom';
+
 
 const EventList = ({ events, setEvents, setEditingEvent }) => {
   const { user } = useAuth();

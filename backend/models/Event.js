@@ -18,8 +18,10 @@ const eventSchema = new mongoose.Schema({
     expFinTime: { type: String , required: true},
     description: { type: String },
     image: {type: String},
-    //numerParticipant: {type: int },
-   
+    participants:[ {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User' },  //參加者
+    ],
 });
 
 module.exports = mongoose.model('Event', eventSchema);
