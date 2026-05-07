@@ -2,6 +2,9 @@ import { useState, useEffect} from 'react';
 import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../axiosConfig';
 import { useNavigate,Link } from 'react-router-dom';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 
 
 
@@ -9,8 +12,15 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
 
   const { user } = useAuth();
   const [formData, setFormData] = useState({ title: '', capacity: '', organizer : '', category: '', ticketRequired : '', ageRestriction : '', 
-        suburb : '', location : '', expStartDate : '', expStartTime : '', expFinDate : '', expFinTime : '', description: '', image: ''});
+        suburb : '', location : '', expStartDate : null, expStartTime : '', expFinDate : '', expFinTime : '', description: '', image: ''});
   const navigate = useNavigate();
+  const locationOptions={
+    "Brisbane CBD": ["Art Centre", "Botanic Garden", "Queensland Museum"],
+    "Sunnybank": ["Sunpac", "Sunnybank Plaza"],
+    "South Bank": ["RiverSide"]
+  };
+
+  const [unavailableDatesByLocation, setUnavailableDatesByLocation, unavailableFinDate] = useState({});
 
   useEffect(() => {
     if (editingEvent) {
@@ -23,9 +33,9 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
         ageRestriction : editingEvent.ageRestriction,
         suburb : editingEvent.suburb,
         location : editingEvent.location,
-        expStartDate : editingEvent.expStartDate,
+        expStartDate : editingEvent.expStartDate? new Date(editingEvent.expStartDate) : null,
         expStartTime : editingEvent.expStartTime,
-        expFinDate : editingEvent.expFinDate,
+        expFinDate : editingEvent.expFinDate? new Date(editingEvent.expFinDate) : null,
         expFinTime : editingEvent.expFinTime,
         description: editingEvent.description,
         //image: editingEvent.image,
@@ -35,7 +45,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
     } else {
       setFormData({ 
         title: '', capacity: '', organizer : '', category: '', ticketRequired : '', ageRestriction : '', 
-        suburb : '', location : '', expStartDate : '', expStartTime : '', expFinDate : '', expFinTime : '', description: '' 
+        suburb : '', location : '', expStartDate : null, expStartTime : '', expFinDate : '', expFinTime : '', description: '' 
       });
     }
  
@@ -102,7 +112,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
         //
         setEditingEvent(null);
         setFormData({ title: '', capacity: '', organizer : '', category: '', ticketRequired : '', ageRestriction : '', 
-        suburb : '', location : '', expStartDate : '', expStartTime : '', expFinDate : '', expFinTime : '', description: '', image: ''  });
+        suburb : '', location : '', expStartDate : null, expStartTime : '', expFinDate : '', expFinTime : '', description: '', image: ''  });
 
     } catch (error) {
 // 
@@ -111,6 +121,57 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
         alert(`Failed to save event: ${errorMsg}`);
     }
 };
+
+  /*刪除已預約時間*/
+  useEffect(() => {
+  const fetchUnavailableDates = async () => {
+    try {
+      const response = await axiosInstance.get('/api/events');
+
+      // 依 location 分組，收集每個 location 的不可用日期
+      const datesByLocation = {};
+
+      response.data.forEach((event) => {
+        if (!event.expStartDate || !event.expFinDate || !event.location) return;
+
+        const location = event.location;
+        const start = new Date(event.expStartDate);
+        const end = new Date(event.expFinDate);
+        const dateRange = [];
+
+        // 產生 start ~ end 的所有日期
+        const current = new Date(start);
+        while (current <= end) {
+          dateRange.push(current.toISOString().split('T')[0]);
+          current.setDate(current.getDate() + 1);
+        }
+
+        // 加入對應 location 的陣列
+        if (!datesByLocation[location]) {
+          datesByLocation[location] = [];
+        }
+        datesByLocation[location].push(...dateRange);
+      });
+
+      // 去除每個 location 裡的重複日期
+      Object.keys(datesByLocation).forEach((loc) => {
+        datesByLocation[loc] = [...new Set(datesByLocation[loc])];
+      });
+
+      // 例如結果：
+      // {
+      //   "Art Centre": ["2026-05-10", "2026-05-11"],
+      //   "Sunpac": ["2026-05-15"],
+      // }
+
+      setUnavailableDatesByLocation(datesByLocation);
+    } catch (error) {
+      console.error("Failed to fetch unavailable dates:", error);
+    }
+  };
+  fetchUnavailableDates();
+}, []);
+
 
 
   return (
@@ -168,14 +229,20 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
       <div className="grid grid-cols-1 grid-cols-3 gap-6 mb-8">
         <div className="space-y-2">
           <label htmlFor="category" className="block text-gray-700 font-medium ml-1">Category</label>
-          <input
-            id="category"
-            type="text"
-            placeholder="Enter the category of the event"
-            value={formData.category}
-            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+          <select
             className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
-          />
+            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            >
+              <option>Select</option>
+              <option value="Community">Community</option>
+              <option value="Education">Education</option> 
+              <option value="Health">Health</option>            
+              <option value="Market">Market</option>
+              <option value="Religion">Religion</option>
+              <option value="Talk">Talk</option>
+              <option value="Workshop">Workshop</option>
+
+          </select>
         </div>
 
         <div className="space-y-2">
@@ -219,7 +286,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
             <option value="South Bank">South Bank</option>
           </select>
         </div>
-
+       
         <div className="space-y-2">
           <label htmlFor="location" className="block text-gray-700 font-medium ml-1">Location</label>
           <select 
@@ -227,10 +294,13 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
             value={formData.location}
             onChange={(e) => setFormData({ ...formData, location: e.target.value})}
           >
-            <option>Select</option>
-            <option value="Art Centre">Art Centre</option>
-            <option value="Botanic Garden">Botanic Garden</option>
-            <option value="Queensland Museum">Queensland Museum</option>
+            <option value="">Select</option>
+
+            {(locationOptions[formData.suburb]|| []).map((loc) => (
+              <option key={loc} value={loc}>
+                {loc}
+              </option>  
+            ))}
           </select>
         </div>
       </div>
@@ -239,13 +309,55 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-6 mb-8">
         <div className="space-y-2">
           <label htmlFor="expStartDate" className="block text-gray-700 font-medium ml-1">Expected Start Date</label>
-          <input
-            id="expStartDate"
-            type="date"
-            value={formData.expStartDate}
-            onChange={(e) => setFormData({ ...formData, expStartDate: e.target.value })}
-            className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
+          {/*
+          <DatePicker
+            selected={formData.expStartDate}
+            onChange={(date) =>
+              setFormData({ ...formData, expStartDate: date })
+            }
+            excludeDates={unavailableDates} // 🔥 反灰不可選日期
+            minDate={new Date()}            // 可選：禁止選過去
+            placeholderText="Select date"
+            dateFormat="yyyy-MM-dd"
+            className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100"
+            wrapperClassName="w-full" 
           />
+          */}
+
+        
+        <input
+          id="expStartDate"
+          type="date"
+          dateFormat="dd-MM-yyyy"
+          value={formData.expStartDate
+            ? new Date(formData.expStartDate).toISOString().split('T')[0]
+            : ''}
+          min={new Date().toISOString().split('T')[0]} // 可選：禁止選過去
+          //excludeDates={unavailableDatesByLocation} // 🔥 反灰不可選日期
+          onChange={(e) => {
+            const selected = e.target.value;
+            const currentLocation = formData.location;
+
+            // 取得當前 location 的不可用日期，沒有則空陣列
+            const blockedDates = unavailableDatesByLocation[currentLocation] || [];
+
+            if (blockedDates.includes(selected)) {
+              alert(`${selected} is already booked at ${currentLocation}. Please choose another date.`);
+              setFormData({ ...formData, expStartDate: null });
+              return;
+            }  if (formData.expStartDate && new Date(selected) > new Date(formData.expFinDate)) {
+              alert(`Start Date should be before the Finished Date. Please choose another date.`);
+              setFormData({ ...formData, expStartDate: null });
+              return;
+            } else {
+              setFormData({ ...formData, expStartDate: new Date(selected) });
+            }
+
+          }}
+          className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100"
+        />
+
+        
         </div>
 
         <div className="space-y-2">
@@ -267,8 +379,29 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
           <input
             id="expFinDate"
             type="date"
-            value={formData.expFinDate}
-            onChange={(e) => setFormData({ ...formData, expFinDate: e.target.value })}
+            dateFormat="dd-MM-yyyy"
+            value={formData.expFinDate
+            ? new Date(formData.expFinDate).toISOString().split('T')[0]
+            : ''}
+            min={new Date().toISOString().split('T')[0]}
+            excludeDates={unavailableDatesByLocation} // 🔥 反灰不可選日期
+            onChange={(e) => {
+              const selected = e.target.value;
+              const currentLocation = formData.location;
+
+              const blockedDates = unavailableDatesByLocation[currentLocation] || [];
+
+              if (blockedDates.includes(selected)) {
+                alert(`${selected} is already booked at ${currentLocation}. Please choose another date.`);
+                setFormData({ ...formData, expFinDate: null });
+              } if (formData.expFinDate && new Date(selected) < new Date(formData.expStartDate)) {
+                alert(`Start Date should be before the Finished Date. Please choose another date.`);
+                setFormData({ ...formData, expFinDate: null });
+                return;
+              } else {
+                setFormData({ ...formData, expFinDate: selected });
+              }
+            }}
             className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
           />
         </div>

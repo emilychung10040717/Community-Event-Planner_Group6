@@ -47,7 +47,7 @@ const BrowseEvent = () => {
 
   return (
     <div className="browse-container">
-
+    
       {/* 上方區塊：role-based */}
       {user?.role === 'member' && myRegisteredEvents.length > 0 && (
         <div className="my-events-section">

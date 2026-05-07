@@ -2,13 +2,14 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Profile from './pages/Profile';      //update
+import Profile from './pages/Profile';      
 import CreateEvents from './pages/CreateEvents';
 import ViewEvent from './pages/ViewEvent';
 import EditEvent from './components/EditEvent';
-import EventDetails from "./pages/EventDetails";    //TBC
-import BrowseEvent from "./pages/BrowseEvent";    //TBC
+import EventDetails from "./pages/EventDetails";    
+import BrowseEvent from "./pages/BrowseEvent";    
 import Admin from "./pages/Admin";
+import AddUser from "./pages/AddUser";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/event-details/:id" element={<EventDetails />} />   {/*TBC*/}
         <Route path="/" element={<BrowseEvent />} />     {/*TBC*/}  
         <Route path="/admin" element={<Admin/>} />
+        <Route path="/admin/add-user" element={<AddUser/>} />
       </Routes>
     </Router>
   );

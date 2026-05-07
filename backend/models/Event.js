@@ -22,6 +22,7 @@ const eventSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User' },  //參加者
     ],
+    //ttlParticipants:{ type: int},
 });
 
 module.exports = mongoose.model('Event', eventSchema);

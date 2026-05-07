@@ -95,4 +95,83 @@ const updateUserProfile = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, loginUser, updateUserProfile, getProfile };
+
+// 新增：取得所有使用者 (供 Admin 使用)
+const getUsers = async (req, res) => {
+    console.log("當前請求者資訊:", req.user); // <--- 加這行
+    try {
+        // 抓取所有使用者，但不回傳密碼
+        const users = await User.find({});
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+// 新增：取得單一使用者 (供 Admin 編輯頁面回填資料使用)
+const getUserById = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const updateUserById = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        const { username, email, phone, organizer, role } = req.body;
+        user.name     = username || user.name;
+        user.email    = email    || user.email;
+        user.phone    = phone    || user.phone;
+        user.organizer= organizer|| user.organizer;
+        user.role     = role     || user.role;
+    
+        const updatedUser = await user.save();
+        res.status(200).json({ 
+            id: updatedUser.id, 
+            name: updatedUser.name, 
+            phone: updatedUser.phone,
+            email: updatedUser.email, 
+            organizer: updatedUser.organizer,
+            role: updatedUser.role 
+        });
+    } catch (error) {
+        console.error('updateUserById error:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const deleteUserById = async (req, res) => {
+    try {
+        const user = await User.findByIdAndDelete(req.params.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error('deleteUserById error:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const addUser = async (req, res) => {
+    const { name, email, phone, organizer, password, role } = req.body;
+    try {
+
+        const userExists = await User.findOne({ email });
+        if (userExists) return res.status(400).json({ message: 'User already exists' });
+        
+        const user = await User.create({ name, email, phone, organizer, password, role});
+        res.status(201).json({ id: user.id, name: user.name, email: user.email, role: user.role, token: generateToken(user.id) });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { registerUser, loginUser, updateUserProfile, getProfile, getUsers, getUserById, updateUserById, deleteUserById, addUser };

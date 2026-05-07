@@ -82,12 +82,14 @@ const ViewEvent = ({ setEditingEvent }) => {
 
         <section>
           <div className="mb-8">
-            <h2 className="text-2xl text-gray-600 inline-block mr-2 font-medium">Scheduling</h2>
+            <h2 className="text-2xl text-gray-600 inline-block mr-2 font-medium">Published</h2>
             <span className="text-gray-300 font-light">- Activities are waiting for scheduling.</span>
           </div>
 
           <div className="bg-gray-50 flex py-4 px-10 text-gray-400 font-medium rounded-t-2xl border-x border-t border-gray-100">
-            <div className="flex-1 text-left">Event Title</div>              
+            <div className="flex-1 text-left">Event Title</div> 
+            <div className="w-32 text-center">Time</div>
+            <div className="w-32 text-center">Participants</div>             
             <div className="w-32 text-center">Status</div>
             <div className="w-64 text-center">Actions</div>
           </div>
@@ -96,78 +98,39 @@ const ViewEvent = ({ setEditingEvent }) => {
             {events.length > 0 ? (
               events.map((event) => (
                 <div key={event._id} className="flex items-center px-10 py-6 border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                  <div className="flex-1 text-xl text-gray-700 font-normal">{event.title}</div>  
-                  <div className="w-32 flex justify-center">
-                    <span className="px-4 py-1.5 rounded-full text-sm font-medium bg-[#E2FDE8] text-[#73E58C]">
-                      {event.status || 'Scheduling'}
-                    </span>
-                  </div>
-                  <div className="w-64 flex justify-end gap-3">
-                    <button
-                      onClick={() => navigate(`/edit-event/${event._id}`)}
-                      className="bg-[#B8D4EE] text-gray-700 px-6 py-2 rounded-xl flex items-center gap-1 hover:bg-[#a5c5e4] transition-all text-sm font-medium"
-                    >
-                      Edit ✏️
-                    </button>
-                    <button
-                      onClick={() => handleDelete(event._id)}
-                      className="bg-[#F2B6B6] text-gray-700 px-6 py-2 rounded-xl flex items-center gap-1 hover:bg-[#e89a9a] transition-all text-sm font-medium"
-                    >
-                      Delete 🗑️
-                    </button>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="py-20 text-center text-gray-300 text-xl border-b border-gray-100">
-                There is no event.
-              </div>
-            )}
-          </div>
-          <div className="bg-white border border-t-0 border-gray-100 py-3 flex justify-center text-gray-300 rounded-b-2xl shadow-sm"></div>
-        </section>
-
-        <section>
-          <div className="mb-8">
-            <h2 className="text-2xl text-gray-600 inline-block mr-2 font-medium">Published</h2>
-            <span className="text-gray-300 font-light">- Events are scheduled and published</span>
-          </div>
-
-          <div className="bg-gray-50 flex py-4 px-10 text-gray-400 font-medium rounded-t-2xl border-x border-t border-gray-100">
-            <div className="flex-1 text-left">Event Title</div>              
-            <div className="w-32 text-center">Status</div>
-            <div className="w-32 text-center">Time</div>
-            <div className="w-32 text-center">Participants</div>
-            <div className="w-32 text-center">Actions</div>
-          </div>
-
-          <div className="border-x border-gray-100">
-            {events.length > 0 ? (
-              events.map((event) => (
-                <div key={event._id} className="flex items-center px-10 py-6 border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                  <div className="flex-1 text-xl text-gray-700 font-normal">{event.title}</div>  
-                  <div className="w-32 flex justify-center">
-                    <span className="px-4 py-1.5 rounded-full text-sm font-medium bg-[#B8D4EE] text-[#8290d8]">
-                      {event.status || 'Published'}
-                    </span>
-                  </div>
-                  <div className="w-32 flex justify-center">
-                      <div className="date-tag">
+                  <div className="flex-1 text-left text-gray-700 font-normal">{event.title}</div>  
                   
-                  </div>
+                  <div className="w-32 flex justify-center">
+                      <div>{event.expStartDate ? new Date(event.expStartDate).toLocaleDateString() : 'N/A'}</div>
                   </div>
                  
                   <div className="w-32 flex justify-center">
-                    --TBC: add on the logic--
+                    <div>{event.participants?.length || 0} / {event.capacity}</div>
                   </div>
-
-                  <div className="w-32 flex justify-end gap-3"> 
-                  <button
-                    onClick={() => navigate(`/event-details/${event._id}`)}
-                    className="className=btn-view"
-                  >
-                    View Details
-                  </button>
+                  <div className="w-32 flex justify-center">
+                    <span className="px-4 py-1.5 rounded-full text-sm font-medium bg-[#E2FDE8] text-[#73E58C]">
+                      {event.status || 'Published'}
+                    </span>
+                  </div>
+                  <div className="w-64 flex justify-center gap-3">
+                    <button 
+                      onClick={() => navigate(`/edit-event/${event._id}`)}
+                      className="bg-[#B8D4EE] text-[#A9A9A9] px-6 py-2 rounded-xl flex-1 items-center gap-2 hover:bg-[#a5c5e4] transition-all text-sm font-medium"
+                    >
+                      Edit 
+                    </button>
+                    <button
+                      onClick={() => handleDelete(event._id)}
+                      className="bg-[#F2B6B6] text-[#A9A9A9] px-6 py-2 rounded-xl flex-1 items-center gap-2 hover:bg-[#e89a9a] transition-all text-sm font-medium"
+                    >
+                      Delete 
+                    </button>
+                    <button
+                      onClick={() => navigate(`/event-details/${event._id}`)}
+                      className="bg-[#E3D8D8] text-[#A9A9A9] px-6 py-2 rounded-xl flex-1 items-center gap-2 hover:bg-[#B7A5A5] transition-all text-sm font-medium"
+                    >
+                      Details
+                    </button>
                   </div>
                 </div>
               ))
