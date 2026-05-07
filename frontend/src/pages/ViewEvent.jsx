@@ -83,7 +83,7 @@ const ViewEvent = ({ setEditingEvent }) => {
         <section>
           <div className="mb-8">
             <h2 className="text-2xl text-gray-600 inline-block mr-2 font-medium">Published</h2>
-            <span className="text-gray-300 font-light">- Activities are waiting for scheduling.</span>
+            <span className="text-gray-300 font-light">- Activities are published on public.</span>
           </div>
 
           <div className="bg-gray-50 flex py-4 px-10 text-gray-400 font-medium rounded-t-2xl border-x border-t border-gray-100">
