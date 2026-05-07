@@ -333,7 +333,6 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
             ? new Date(formData.expStartDate).toISOString().split('T')[0]
             : ''}
           min={new Date().toISOString().split('T')[0]} // 可選：禁止選過去
-          //excludeDates={unavailableDatesByLocation} // 🔥 反灰不可選日期
           onChange={(e) => {
             const selected = e.target.value;
             const currentLocation = formData.location;
@@ -384,7 +383,6 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
             ? new Date(formData.expFinDate).toISOString().split('T')[0]
             : ''}
             min={new Date().toISOString().split('T')[0]}
-            excludeDates={unavailableDatesByLocation} // 🔥 反灰不可選日期
             onChange={(e) => {
               const selected = e.target.value;
               const currentLocation = formData.location;
@@ -395,7 +393,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
                 alert(`${selected} is already booked at ${currentLocation}. Please choose another date.`);
                 setFormData({ ...formData, expFinDate: null });
               } if (formData.expFinDate && new Date(selected) < new Date(formData.expStartDate)) {
-                alert(`Start Date should be before the Finished Date. Please choose another date.`);
+                alert(`Finish Date should be after the Start Date. Please choose another date.`);
                 setFormData({ ...formData, expFinDate: null });
                 return;
               } else {
