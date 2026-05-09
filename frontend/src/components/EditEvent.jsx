@@ -150,17 +150,23 @@ const EditEvent = () => {
 
             {/* second row for category/ticketrequired/age */}
             <div className="grid grid-cols-1 grid-cols-3 gap-6 mb-8">
-                <div className="space-y-2">
+              <div className="space-y-2">
                 <label htmlFor="category" className="block text-gray-700 font-medium ml-1">Category</label>
-                <input
-                    id="category"
-                    type="text"
-                    placeholder="Enter the category of the event"
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
-                />
-                </div>
+                <select
+                  className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  >
+                    <option>Select</option>
+                    <option value="Community">Community</option>
+                    <option value="Education">Education</option> 
+                    <option value="Health">Health</option>            
+                    <option value="Market">Market</option>
+                    <option value="Religion">Religion</option>
+                    <option value="Talk">Talk</option>
+                    <option value="Workshop">Workshop</option>
+
+                </select>
+              </div>
 
                 <div className="space-y-2">
                 <label htmlFor="ageRestriction" className="block text-gray-700 font-medium ml-1">Ticket Required</label>
