@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../axiosConfig';
 import { useNavigate,Link } from 'react-router-dom';
 import "react-datepicker/dist/react-datepicker.css";
-
+import { useParams } from 'react-router-dom';
 
 
 
@@ -13,6 +13,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
   const [formData, setFormData] = useState({ title: '', capacity: '', organizer : '', category: '', ticketRequired : '', ageRestriction : '', 
         suburb : '', location : '', expStartDate : null, expStartTime : '', expFinDate : '', expFinTime : '', description: '', image: ''});
   const navigate = useNavigate();
+  const { id } = useParams();
   const locationOptions={
     "Brisbane CBD": ["Art Centre", "Botanic Garden", "Queensland Museum"],
     "Sunnybank": ["Sunpac", "Sunnybank Plaza"],
@@ -59,6 +60,36 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
  
 
   }, [editingEvent]);
+
+  useEffect(() => {
+    if (id) {
+      axiosInstance.get(`/api/events/${id}`, {
+        headers: { Authorization: `Bearer ${user.token}` }
+      }).then(res => {
+        const event = res.data;
+        setFormData({
+          title: event.title || '',
+          capacity: event.capacity || '',
+          organizer: event.organizer || '',
+          category: event.category || '',
+          ticketRequired: event.ticketRequired ?? false,
+          ageRestriction: event.ageRestriction ?? false,
+          suburb: event.suburb || '',
+          location: event.location || '',
+          expStartDate: event.expStartDate ? new Date(event.expStartDate) : null,
+          expStartTime: event.expStartTime || '',
+          expFinDate: event.expFinDate ? new Date(event.expFinDate) : null,
+          expFinTime: event.expFinTime || '',
+          description: event.description || '',
+        });
+      }).catch(() => alert("Could not load event details."));
+    }
+  }, [id]);  
+
+
+
+
+
   //update
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -90,12 +121,13 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
         console.log('--- Login information of logged-in user ---');
         console.log('User from database (user):', user._id ? 'Found' : 'Not found', user._id);
 
-        if (editingEvent && editingEvent._id) {
-            const response = await axiosInstance.put(`/api/events/${editingEvent._id}`, dataToSubmit, config);
-            alert("Event Updated!");
-            setEvents(events.map((event) => (event._id === response.data._id ? response.data : event)));
-        
-
+        if (editingEvent?._id || id) {
+          const eventId = editingEvent?._id || id;
+          const response = await axiosInstance.put(`/api/events/${eventId}`, dataToSubmit, config);
+          alert("Event Updated!");
+          navigate('/view-events'); // 加這行，edit by id 後要導回列表
+          setEvents(events.map((event) => (event._id === response.data._id ? response.data : event)));
+                
         } else {  
             
             console.log('--- [Debug] Create Event Step ---');
@@ -180,7 +212,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
   return (
     <form onSubmit={handleSubmit} className="max-w-8xl mx-auto bg-white p-10 rounded-[3rem] shadow-sm mb-6 border border-gray-100">
       <div className="bg-purple-100 py-3 rounded-xl mb-6 text-center">
-        <h1 className="text-3xl font-light text-purple-600 tracking-wide">Create event</h1>
+        <h1 className="text-3xl font-light text-purple-600 tracking-wide">{id ? 'Edit Event' : 'Create Event'}</h1>
       </div>
       {/* button for return back*/}
       <Link 
@@ -235,6 +267,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
           <label htmlFor="category" className="block text-gray-700 font-medium ml-1">Category</label>
           <select
             className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
+            value={formData.category}
             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
             >
               <option>Select</option>
@@ -253,7 +286,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
           <label htmlFor="ageRestriction" className="block text-gray-700 font-medium ml-1">Ticket Required</label>
           <select 
             className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
-            
+            value={String(formData.ticketRequired)}
             onChange={(e) => setFormData({ ...formData, ticketRequired: e.target.value === "true"})}
           >
             <option>Select</option>
@@ -266,6 +299,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
           <label htmlFor="ageRestriction" className="block text-gray-700 font-medium ml-1">Age Restriction</label>
           <select 
             className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
+            value={String(formData.ageRestriction)}
             onChange={(e) => setFormData({ ...formData, ageRestriction: e.target.value === "true" })}
           >
             <option>Select</option>
@@ -445,7 +479,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
       {/*submit button*/}
       <div className="flex justify-center">
         <button type="submit" className="w-full bg-[#D1B3E2] hover:bg-[#C2A2D4] text-white py-4 rounded-2xl shadow-lg shadow-purple-100 flex justify-center items-center font-bold tracking-widest relative overflow-hidden text-xl">
-          Create Event
+         {id ? 'Update Event ✨' : 'Create Event'}
         </button>
       </div>
     </form>

@@ -62,7 +62,7 @@ const defaultImage = categoryImages[event.category] || '/community.jpg';
           ) : user?.role === 'member' ? (
             isRegistered ? (
               <button onClick={handleCancel} className="btn-register" style={{backgroundColor: '#B65DD8'}}>
-                Cancel
+                Cancel Registration
               </button>
             ) : (
               <button onClick={() => navigate(`/event-details/${event._id}`)} className="btn-register">
