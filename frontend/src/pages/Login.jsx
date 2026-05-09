@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {Link, useNavigate } from 'react-router-dom';
-
+import { Eye, EyeOff } from 'lucide-react';
 
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '', role:'' });   
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
 const handleChange = (e) => {
   const { name, value } = e.target;
@@ -69,16 +71,23 @@ const handleSubmit = async (e) => {
           />
           </div>
         
-        <div className ="relative">
-          <span className="absolute inset-y-0 left-4 flex items-center text-Black-400"> Password   
-          </span>
+        <div className="relative">
+          <span className="absolute inset-y-0 left-4 flex items-center text-black-400">Password</span>
           <input
-            type="password"
-            placeholder="Your Password"
+            type={showPassword ? "text" : "password"}
+            name="password"
+            placeholder="Enter your password"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            className="w-full pl-24 pr-4 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all"
+            className="w-full pl-24 pr-12 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all"
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute inset-y-0 right-4 flex items-center text-gray-300 hover:text-gray-500"
+          >
+            {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+          </button>
         </div>
         
         {/* forget passwoord */}

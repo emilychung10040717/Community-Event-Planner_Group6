@@ -71,7 +71,7 @@ const Navbar = () => {
           {user ? (
             <>
               <span className="mr-4 text-white font-medium">
-                Hi!  
+                Hi! {'  '}
                 <span className="capitalize text-purple-200">{user.name}</span>
                 
               </span>

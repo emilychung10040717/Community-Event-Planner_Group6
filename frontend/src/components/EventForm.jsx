@@ -208,7 +208,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
 }, []);
 
 
-
+  const selectClass = "w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-200 bg-white cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22%239F7AEA%22%20d%3D%22M7%2010l5%205%205-5z%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_1rem_center]";
   return (
     <form onSubmit={handleSubmit} className="max-w-8xl mx-auto bg-white p-10 rounded-[3rem] shadow-sm mb-6 border border-gray-100">
       <div className="bg-purple-100 py-3 rounded-xl mb-6 text-center">
@@ -224,7 +224,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
       {/* first row for title/capacity/organizzer */}
       <div className="grid grid-cols-1 grid-cols-3 gap-6 mb-8">
         <div className="space-y-2">
-          <label htmlFor="title" className="block text-gray-700 font-medium">Event Title</label>
+          <label htmlFor="title" className="block text-gray-700 font-medium">Event Title<span className="text-red-400">*</span></label>
           <input
             id="title"
             type="text"
@@ -236,7 +236,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="capacity" className="block text-gray-700 font-medium">Capacity</label>
+          <label htmlFor="capacity" className="block text-gray-700 font-medium">Capacity<span className="text-red-400">*</span></label>
           <input
             id="capacity"
             type="number"
@@ -249,7 +249,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="organizer" className="block text-gray-700 font-medium">Organizer</label>
+          <label htmlFor="organizer" className="block text-gray-700 font-medium">Organizer<span className="text-red-400">*</span></label>
           <input
             id="organizer"
             type="text"
@@ -264,9 +264,9 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
       {/* second row for category/ticketrequired/age */}
       <div className="grid grid-cols-1 grid-cols-3 gap-6 mb-8">
         <div className="space-y-2">
-          <label htmlFor="category" className="block text-gray-700 font-medium ml-1">Category</label>
+          <label htmlFor="category" className="block text-gray-700 font-medium ml-1">Category<span className="text-red-400">*</span></label>
           <select
-            className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
+            className={selectClass}
             value={formData.category}
             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
             >
@@ -283,9 +283,9 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="ageRestriction" className="block text-gray-700 font-medium ml-1">Ticket Required</label>
+          <label htmlFor="ageRestriction" className="block text-gray-700 font-medium ml-1">Ticket Required<span className="text-red-400">*</span></label>
           <select 
-            className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
+            className={selectClass}
             value={String(formData.ticketRequired)}
             onChange={(e) => setFormData({ ...formData, ticketRequired: e.target.value === "true"})}
           >
@@ -296,9 +296,9 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="ageRestriction" className="block text-gray-700 font-medium ml-1">Age Restriction</label>
+          <label htmlFor="ageRestriction" className="block text-gray-700 font-medium ml-1">Age Restriction<span className="text-red-400">*</span></label>
           <select 
-            className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
+            className={selectClass}
             value={String(formData.ageRestriction)}
             onChange={(e) => setFormData({ ...formData, ageRestriction: e.target.value === "true" })}
           >
@@ -312,9 +312,9 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
       {/* row 3 for suburb and location */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-6 mb-8">
         <div className="space-y-2">
-          <label htmlFor="suburb" className="block text-gray-700 font-medium ml-1">Suburb</label>
+          <label htmlFor="suburb" className="block text-gray-700 font-medium ml-1">Suburb<span className="text-red-400">*</span></label>
           <select 
-            className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
+            className={selectClass}
             value={formData.suburb}
             onChange={(e) => setFormData({ ...formData, suburb: e.target.value })}
           >
@@ -328,7 +328,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
         <div className="space-y-2">
           <label htmlFor="location" className="block text-gray-700 font-medium ml-1">Location</label>
           <select 
-            className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
+            className={selectClass}
             value={formData.location}
             onChange={(e) => setFormData({ ...formData, location: e.target.value})}
           >
@@ -346,7 +346,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
       {/* row 4 start date & time*/}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-6 mb-8">
         <div className="space-y-2">
-          <label htmlFor="expStartDate" className="block text-gray-700 font-medium ml-1">Expected Start Date</label>
+          <label htmlFor="expStartDate" className="block text-gray-700 font-medium ml-1">Expected Start Date<span className="text-red-400">*</span></label>
         <input
           id="expStartDate"
           type="date"
@@ -383,7 +383,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
 
         <div className="space-y-2">
         <label htmlFor="expStartTime" className="block text-gray-700 font-medium ml-1">
-          Expected Start Time
+          Expected Start Time<span className="text-red-400">*</span>
         </label>
         <select
           id="expStartTime"
@@ -405,7 +405,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
       {/* row 5 finish date & time*/}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-6 mb-8">
         <div className="space-y-2">
-          <label htmlFor="expFinDate" className="block text-gray-700 font-medium ml-1">Expected Finish Date</label>
+          <label htmlFor="expFinDate" className="block text-gray-700 font-medium ml-1">Expected Finish Date <span className="text-red-400">*</span></label>
           <input
             id="expFinDate"
             type="date"
@@ -436,7 +436,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
         </div>
         <div className="space-y-2">
         <label htmlFor="expFinTime" className="block text-gray-700 font-medium ml-1">
-          Expected Finish Time
+          Expected Finish Time<span className="text-red-400">*</span>
         </label>
         <select
           id="expFinTime"
@@ -459,13 +459,13 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-6 mb-8">
         <div className="space-y-2">
           <label htmlFor="description" className="block text-gray-700 font-medium ml-1">Description</label>
-          <input
+          <textarea
             id="description"
-            type="text"
-            placeholder="Enter mroe description for the event"
+            rows={4}
+            placeholder="Enter more description for the event"
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
+            className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300 resize-none"
           />
         </div>
       </div>
@@ -473,7 +473,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
       {/*check column*/}
       <div className="flex items-center justify-center gap-3 mb-10 text-gray-400 font-light">
         <input type="checkbox" className="w-6 h-6 rounded-full border-gray-300 accent-purple-500" required />
-        <p>I'm for sure all the details are correct before I submit it!</p>
+        <p>I confirm all details are correct before I submit it!</p>
       </div>
       
       {/*submit button*/}
