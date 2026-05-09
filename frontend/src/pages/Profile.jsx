@@ -94,6 +94,7 @@ const Profile = () => {
               className="w-full pl-24 pr-4 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all"
             />
         </div>
+        {formData.role === "eventorganizer" && (
         <div className ="relative">
             <span className="absolute inset-y-0 left-4 flex items-center text-Black-400"> Organizer   
             </span>
@@ -105,6 +106,7 @@ const Profile = () => {
               className="w-full pl-24 pr-4 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all"
             />
         </div>
+        )}
         <div className ="relative">
             <span className="absolute inset-y-0 left-4 flex items-center text-Black-400"> Role  
             </span>
