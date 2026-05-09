@@ -5,7 +5,7 @@ import Register from './pages/Register';
 import Profile from './pages/Profile';      
 import CreateEvents from './pages/CreateEvents';
 import ViewEvent from './pages/ViewEvent';
-import EditEvent from './components/EditEvent';
+import EventForm from './components/EventForm';
 import EventDetails from "./pages/EventDetails";    
 import BrowseEvent from "./pages/BrowseEvent";    
 import Admin from "./pages/Admin";
@@ -21,7 +21,11 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/create-events" element={<CreateEvents />} />
         <Route path="/view-events" element={<ViewEvent/>} />
-        <Route path="/edit-event/:id" element={<EditEvent />} />
+        <Route path="/edit-event/:id" element={
+          <div className="container mx-auto p-6">
+            <EventForm events={[]} setEvents={() => {}} editingEvent={null} setEditingEvent={() => {}} />
+          </div>
+        } />
         <Route path="/event-details/:id" element={<EventDetails />} />   {/*TBC*/}
         <Route path="/" element={<BrowseEvent />} />     {/*TBC*/}  
         <Route path="/admin" element={<Admin/>} />

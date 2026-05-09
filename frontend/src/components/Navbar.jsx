@@ -5,6 +5,7 @@ import '../App.css';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  console.log('user object:', user);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false); // controly overlay
   const handleSearch = (e) => {
@@ -70,9 +71,9 @@ const Navbar = () => {
           {user ? (
             <>
               <span className="mr-4 text-white font-medium">
-                Hi! <span className="capitalize text-purple-200">
-                  {user.role === 'eventorganizer' ? 'Organizer' : user.role}
-                </span>
+                Hi!  
+                <span className="capitalize text-purple-200">{user.name}</span>
+                
               </span>
                 {user.role !== 'admin' && (
             <>

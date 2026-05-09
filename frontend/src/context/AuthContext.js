@@ -3,12 +3,16 @@ import axiosInstance from '../axiosConfig';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('userInfo');
+    return saved ? JSON.parse(saved) : null; // ✅ 重整後從 localStorage 讀回
+  });
 
 
   const login = async (loginData) => {
     try{
       const response = await axiosInstance.post('/api/auth/login', loginData);
+      console.log('Login response:', response.data); // 確認有沒有 name 欄位
       setUser(response.data);
       localStorage.setItem('userInfo', JSON.stringify(response.data)); // ✅ 加這行
       return response.data;

@@ -44,7 +44,8 @@ const loginUser = async (req, res) => {
             //console.log('User found in database (user):', user.role ? 'Found' : 'Not found',user.role);
             //console.log('Role passed (role):', role ? 'Found' : 'Not found',role);
             res.json({ 
-                id: user.id, 
+                id: user.id,
+                name: user.name, 
                 email: user.email, 
                 role: user.role,    // response role data
                 token: generateToken(user.id) 
