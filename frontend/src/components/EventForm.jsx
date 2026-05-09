@@ -2,7 +2,6 @@ import { useState, useEffect} from 'react';
 import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../axiosConfig';
 import { useNavigate,Link } from 'react-router-dom';
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 
@@ -21,7 +20,16 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
   };
 
   const [unavailableDatesByLocation, setUnavailableDatesByLocation, unavailableFinDate] = useState({});
-
+  
+  {/* Define options of time: from 00:00 to 23:30 */}
+  const timeOptions = [];
+  for (let h = 0; h < 24; h++) {
+    for (let m = 0; m < 60; m += 30) {
+      const hour = h.toString().padStart(2, '0');
+      const minute = m.toString().padStart(2, '0');
+      timeOptions.push(`${hour}:${minute}`);
+    }
+  }
   useEffect(() => {
     if (editingEvent) {
       setFormData({
@@ -122,13 +130,13 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
     }
 };
 
-  /*刪除已預約時間*/
+  /*Delete the reserved date*/
   useEffect(() => {
   const fetchUnavailableDates = async () => {
     try {
       const response = await axiosInstance.get('/api/events');
 
-      // 依 location 分組，收集每個 location 的不可用日期
+      // collect all the unavailable dates by different locations
       const datesByLocation = {};
 
       response.data.forEach((event) => {
@@ -139,30 +147,25 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
         const end = new Date(event.expFinDate);
         const dateRange = [];
 
-        // 產生 start ~ end 的所有日期
+        // generate the all dates between expStartDate and expFinDate
         const current = new Date(start);
         while (current <= end) {
           dateRange.push(current.toISOString().split('T')[0]);
           current.setDate(current.getDate() + 1);
         }
 
-        // 加入對應 location 的陣列
+        // Store the date corresponding to the specific location
         if (!datesByLocation[location]) {
           datesByLocation[location] = [];
         }
         datesByLocation[location].push(...dateRange);
       });
 
-      // 去除每個 location 裡的重複日期
+      // Remove the duplicated date in each event
       Object.keys(datesByLocation).forEach((loc) => {
         datesByLocation[loc] = [...new Set(datesByLocation[loc])];
       });
 
-      // 例如結果：
-      // {
-      //   "Art Centre": ["2026-05-10", "2026-05-11"],
-      //   "Sunpac": ["2026-05-15"],
-      // }
 
       setUnavailableDatesByLocation(datesByLocation);
     } catch (error) {
@@ -205,6 +208,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
           <input
             id="capacity"
             type="number"
+            min="1"
             placeholder="Enter the maximum number of participants, e.g.: 100"
             value={formData.capacity}
             onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
@@ -309,22 +313,6 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-6 mb-8">
         <div className="space-y-2">
           <label htmlFor="expStartDate" className="block text-gray-700 font-medium ml-1">Expected Start Date</label>
-          {/*
-          <DatePicker
-            selected={formData.expStartDate}
-            onChange={(date) =>
-              setFormData({ ...formData, expStartDate: date })
-            }
-            excludeDates={unavailableDates} // 🔥 反灰不可選日期
-            minDate={new Date()}            // 可選：禁止選過去
-            placeholderText="Select date"
-            dateFormat="yyyy-MM-dd"
-            className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100"
-            wrapperClassName="w-full" 
-          />
-          */}
-
-        
         <input
           id="expStartDate"
           type="date"
@@ -332,12 +320,12 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
           value={formData.expStartDate
             ? new Date(formData.expStartDate).toISOString().split('T')[0]
             : ''}
-          min={new Date().toISOString().split('T')[0]} // 可選：禁止選過去
+          min={new Date().toISOString().split('T')[0]} // Disappear the past date
           onChange={(e) => {
             const selected = e.target.value;
             const currentLocation = formData.location;
 
-            // 取得當前 location 的不可用日期，沒有則空陣列
+            // Save the unavailable date
             const blockedDates = unavailableDatesByLocation[currentLocation] || [];
 
             if (blockedDates.includes(selected)) {
@@ -360,15 +348,24 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="expStartTime" className="block text-gray-700 font-medium ml-1">Expected Start Time</label>
-          <input
-            id="expStartTime"
-            type="time"
-            value={formData.expStartTime}
-            onChange={(e) => setFormData({ ...formData, expStartTime: e.target.value })}
-            className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
-          />
+        <label htmlFor="expStartTime" className="block text-gray-700 font-medium ml-1">
+          Expected Start Time
+        </label>
+        <select
+          id="expStartTime"
+          value={formData.expStartTime}
+          onChange={(e) => setFormData({ ...formData, expStartTime: e.target.value })}
+          className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 bg-white appearance-none cursor-pointer"
+        >
+          <option value="" disabled>Select a time</option>
+          {timeOptions.map((time) => (
+            <option key={time} value={time}>
+              {time}
+            </option>
+          ))}
+        </select>
         </div>
+
       </div>
 
       {/* row 5 finish date & time*/}
@@ -403,18 +400,26 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
             className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
           />
         </div>
-
         <div className="space-y-2">
-          <label htmlFor="expFinTime" className="block text-gray-700 font-medium ml-1">Expected Finish Time</label>
-          <input
-            id="expFinTime"
-            type="time"
-            value={formData.expFinTime}
-            onChange={(e) => setFormData({ ...formData, expFinTime: e.target.value })}
-            className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
-          />
+        <label htmlFor="expFinTime" className="block text-gray-700 font-medium ml-1">
+          Expected Finish Time
+        </label>
+        <select
+          id="expFinTime"
+          value={formData.expFinTime}
+          onChange={(e) => setFormData({ ...formData, expFinTime: e.target.value })}
+          className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 bg-white appearance-none cursor-pointer"
+        >
+          <option value="" disabled>Select a time</option>
+          {timeOptions.map((time) => (
+            <option key={time} value={time}>
+              {time}
+            </option>
+          ))}
+        </select>
         </div>
       </div>
+
 
       {/* row 6 for description and image*/}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-6 mb-8">
@@ -429,18 +434,6 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
             className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
           />
         </div>
-
-        {/* Function for upload image (need to be fixed later)*/}
-        {/* <div className="space-y-2">
-          <label htmlFor="image" className="block text-gray-700 font-medium ml-1">Upload Image</label>
-          <input
-            id="image"
-            type="file"
-            //ref={fileInputRef}
-            onChange={(e) => setFormData({ ...formData, image: e.target.files[0] })}
-            className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
-          />
-        </div> */}
       </div>
 
       {/*check column*/}

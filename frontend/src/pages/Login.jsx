@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {Link, useNavigate } from 'react-router-dom';
-import axiosInstance from '../axiosConfig';
+
 
 
 const Login = () => {
@@ -20,11 +20,6 @@ const handleChange = (e) => {
 const handleSubmit = async (e) => {
   e.preventDefault();
   
-  if (!formData.role) {
-    alert("Please select your login role.");
-    return;
-  }
-
   try {
     const userData = await login(formData);
     
@@ -58,64 +53,6 @@ const handleSubmit = async (e) => {
   {/* leftside title */}
   <h1 className="text-3xl font-semibold text-gray-800">Log in</h1>
 
-  {/* rightside title */}
-  <div className="flex flex-col items-start space-y-2">
-    
-    {/* Role：Member  */}
-    <div >  {/*visualization for disabled status*/}   {/*className="opacity-50 cursor-not-allowed"*/}
-      <label className="flex items-center space-x-2">
-        <input
-          type="radio"
-          name="role"
-          value="member"
-          checked={formData.role === "member"}
-          onChange={handleChange} 
-          className="w-4 h-4 accent-purple-400"
-          //disabled          // disable the functionality
-        />
-        <span className="text-gray-400 text-sm font-light leading-none">
-          I'm a community member <br/>
-          {/*<span className="text-xs text-red-300">[Not available now]</span>*/}
-        </span>
-      </label>
-    </div>
-
-    {/* Role：Organizer */}
-    <div>
-      <label className="flex items-center space-x-2 cursor-pointer">
-        <input
-          type="radio"
-          name="role"
-          value="eventorganizer"
-          checked = {formData.role === "eventorganizer"}
-          onChange={handleChange} 
-          className="w-4 h-4 accent-purple-400"
-          defaultChecked
-        />
-        <span className="text-gray-400 text-sm font-light leading-none">
-          I'm an event organizer
-        </span>
-      </label>
-    </div>
-    {/* Role：Admin */}
-    <div >  {/*visualization for disabled status*/}   {/*className="opacity-50 cursor-not-allowed"*/}
-      <label className="flex items-center space-x-2">
-        <input
-          type="radio"
-          name="role"
-          value="admin"
-          checked={formData.role === "admin"}
-          onChange={handleChange} 
-          className="w-4 h-4 accent-purple-400"
-          //disabled          // disable the functionality
-        />
-        <span className="text-gray-400 text-sm font-light leading-none">
-          I'm Admin <br/>
-          {/*<span className="text-xs text-red-300">[Not available now]</span>*/}
-        </span>
-      </label>
-    </div>
-  </div>
 </div>
  
      

@@ -69,6 +69,11 @@ const Navbar = () => {
         <div className="flex items-center">
           {user ? (
             <>
+              <span className="mr-4 text-white font-medium">
+                Hi! <span className="capitalize text-purple-200">
+                  {user.role === 'eventorganizer' ? 'Organizer' : user.role}
+                </span>
+              </span>
                 {user.role !== 'admin' && (
             <>
               <Link to="/" className="mr-4 hover:text-purple-200">Home</Link>

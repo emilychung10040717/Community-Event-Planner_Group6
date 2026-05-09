@@ -4,9 +4,10 @@ import { useNavigate } from 'react-router-dom';
 
 const AdminUserManagement = () => {
   const [users, setUsers] = useState([]);
+  const [filterRole, setFilterRole] = useState('all'); //Record the tag of selected role
   const [loading, setLoading] = useState(true);
-  const [editingId, setEditingId] = useState(null);       // 目前展開編輯的 user id
-  const [editForm, setEditForm] = useState({});           // 編輯中的表單資料
+  const [editingId, setEditingId] = useState(null);       
+  const [editForm, setEditForm] = useState({});           
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
 
@@ -38,8 +39,8 @@ const AdminUserManagement = () => {
         username: latestUser.username || latestUser.name || '',
         email: latestUser.email || '',
         role: latestUser.role || 'member',
-        organizer: latestUser.organizer || '',  // ✅ 補上
-        phone: latestUser.phone || '',          // ✅ 補上
+        organizer: latestUser.organizer || '',  // 
+        phone: latestUser.phone || '',          // 
       });
     }
   };
@@ -77,10 +78,18 @@ const AdminUserManagement = () => {
       }
     }
   };
-
+  
   if (loading) return <div className="p-10 text-center">Loading Admin Panel...</div>;
 
+  // set the filter before render
+  const filteredUsers = users.filter(user => {
+  if (filterRole === 'all') return true;
+  return user.role === filterRole;
+});
+
+
   return (
+    
     <div className="min-h-screen bg-[#F8F9FE] pt-24 pb-10 px-6">
       <div className="max-w-5xl mx-auto">
 
@@ -91,11 +100,27 @@ const AdminUserManagement = () => {
             <p className="text-gray-500">Welcome back to your panel</p>
           </div>
           <div className="flex gap-4">
-            <div className="w-20 h-20 border-4 border-[#A478C8] rounded-full flex flex-col items-center justify-center text-[10px] text-center font-bold text-[#A478C8] bg-white shadow-sm">
+            <div 
+              onClick={() => setFilterRole('all')}
+              className={`w-20 h-20 border-4 rounded-full flex flex-col items-center justify-center text-[10px] text-center font-bold cursor-pointer transition-all shadow-sm
+                ${filterRole === 'all' ? 'border-purple-500 bg-purple-50 scale-110' : 'border-purple-200 bg-white text-purple-300'}`}
+            >
+              <span>{users.length}</span>
+              <span>All Users</span>
+            </div>
+            <div 
+              onClick={() => setFilterRole('member')}
+              className={`w-20 h-20 border-4 rounded-full flex flex-col items-center justify-center text-[10px] text-center font-bold cursor-pointer transition-all shadow-sm
+                ${filterRole === 'member' ? 'border-[#A478C8] bg-purple-50 scale-110' : 'border-purple-100 bg-white text-gray-300'}`}
+            >
               <span>{users.filter(u => u.role === 'member').length}</span>
               <span>Members</span>
             </div>
-            <div className="w-20 h-20 border-4 border-purple-200 rounded-full flex flex-col items-center justify-center text-[10px] text-center font-bold text-purple-300 bg-white shadow-sm">
+            <div 
+              onClick={() => setFilterRole('eventorganizer')}
+              className={`w-20 h-20 border-4 rounded-full flex flex-col items-center justify-center text-[10px] text-center font-bold cursor-pointer transition-all shadow-sm
+                ${filterRole === 'eventorganizer' ? 'border-purple-500 bg-purple-50 scale-110' : 'border-purple-200 bg-white text-purple-300'}`}
+            >
               <span>{users.filter(u => u.role === 'eventorganizer').length}</span>
               <span>Organizers</span>
             </div>
@@ -115,7 +140,7 @@ const AdminUserManagement = () => {
           </div>
 
           <div className="divide-y divide-gray-50">
-            {users.map((user) => (
+            {filteredUsers.map((user) => (
               <div key={user._id}>
                 {/* ── 使用者列 ── */}
                 <div className="flex items-center px-8 py-5 hover:bg-gray-50/50 transition-colors">

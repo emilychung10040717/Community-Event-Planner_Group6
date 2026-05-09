@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axiosInstance from '../axiosConfig';
 
+
 const Register = () => {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', organizer: '', password: '', confirmPassword: '', role: ''});
   const navigate = useNavigate();
@@ -94,23 +95,6 @@ const Register = () => {
             </span>
           </label>
         </div>
-
-        {/* Role：Admin */}
-        <div>
-          <label className="flex items-center space-x-2 cursor-pointer">
-            <input
-              type="radio"
-              name="role"
-              className="w-4 h-4 accent-purple-400"
-              value = "admin"
-              checked = {formData.role === "admin"}
-              onChange={handleChange} 
-            />
-            <span className="text-gray-400 text-sm font-light leading-none">
-              I'm ADMIN
-            </span>
-          </label>
-        </div>
       </div>
     </div>
       {/*make a form for registration*/}
@@ -152,19 +136,21 @@ const Register = () => {
           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
           className="w-full pl-24 pr-4 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all"
         />
-        </div>
-        <div className ="relative">
-          <span className="absolute inset-y-0 left-4 flex items-center text-Black-400">Organizer   
-          </span>
-        <input
-          type="text"
-          name="name" // connection for handle change
-          placeholder="Keep blank if not event organizer"
-          value={formData.organizer}
-          onChange={(e) => setFormData({ ...formData, organizer: e.target.value })}
-          className="w-full pl-24 pr-4 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all"
-        />
-        </div>
+        </div> 
+        {formData.role === 'eventorganizer' && ( 
+          <div className ="relative">
+            <span className="absolute inset-y-0 left-4 flex items-center text-Black-400">Organizer   
+            </span>
+          <input
+            type="text"
+            name="name" // connection for handle change
+            placeholder="Organisation you belong"
+            value={formData.organizer}
+            onChange={(e) => setFormData({ ...formData, organizer: e.target.value })}
+            className="w-full pl-24 pr-4 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all"
+          />
+          </div>
+        )}
         <div className ="relative">
           <span className="absolute inset-y-0 left-4 flex items-center text-Black-400"> Password 
           </span>
