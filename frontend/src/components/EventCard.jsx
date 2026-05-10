@@ -18,6 +18,8 @@ const defaultImage = categoryImages[event.category] || '/community.jpg';
   const day = eventDate.getDate();
   const month = eventDate.toLocaleString('en-US', { month: 'short' });
 
+  const currentParticipants = event?.participants?.length || 0;
+  const isFull = currentParticipants >= event?.capacity;
   const handleCancel = async () => {
     try {
       await axiosInstance.delete(
@@ -45,8 +47,14 @@ const defaultImage = categoryImages[event.category] || '/community.jpg';
       <div className="card-content">
         <div className="title-row">
           <h3 className="event-title">{event.title}</h3>
-          <span className="category-tag">{event.category || 'Event'}</span>
+          <div className="flex items-center gap-2">
+            {isFull && (
+              <span className="text-xs bg-red-100 text-red-400 px-2 py-0.5 rounded-full">Full</span>
+            )}
+            <span className="category-tag">{event.category || 'Event'}</span>
+          </div>
         </div>
+        
         <div className="info-row">
           <p>🏠 {event.organizer}</p>
           <p>📍 {event.location}</p>
@@ -65,8 +73,12 @@ const defaultImage = categoryImages[event.category] || '/community.jpg';
                 Cancel Registration
               </button>
             ) : (
-              <button onClick={() => navigate(`/event-details/${event._id}`)} className="btn-register">
-                Register Event
+              <button 
+                onClick={() => !isFull && navigate(`/event-details/${event._id}`)}
+                disabled={isFull}
+                className={`btn-register ${isFull ? 'opacity-50 cursor-not-allowed bg-gray-300' : ''}`}
+              >
+                {isFull ? 'Fully Booked' : 'Register Event'}
               </button>
             )
           ) : null}

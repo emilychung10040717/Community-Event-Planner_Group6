@@ -63,7 +63,8 @@ const EventDetails = () => {
       }
     };
 
-
+  const currentParticipants = event?.participants?.length || 0;
+  const isFull = currentParticipants >= event?.capacity;
 
   // 重要：如果 event 還沒抓到，先回傳 Loading，避免後續讀取 event.title 報錯
   if (!event) {
@@ -139,7 +140,12 @@ const EventDetails = () => {
           <div className="flex items-start gap-4">
             <div className="bg-purple-100 p-3 rounded-xl text-purple-600">👥</div>
             <div>
-              <p className="font-medium text-gray-700">{event.capacity} ppl</p>
+              <p className="font-medium text-gray-700">
+                {currentParticipants} / {event.capacity} ppl
+                {isFull && (
+                  <span className="ml-2 text-xs bg-red-100 text-red-400 px-2 py-0.5 rounded-full">Full</span>
+                )}
+              </p>
               <p className="text-sm text-gray-400">
                 {event.ticketRequired ? "Ticket Required" : "Free Entry"} 
                 {event.ageRestriction && " • 18+"}
@@ -171,10 +177,14 @@ const EventDetails = () => {
             ) : ( user?.role === 'member'? (
               
               <button 
-              onClick={isRegistered ? handleCancel : handleRegister}
-              className={`w-full ${isRegistered ? 'bg-[#B65DD8] hover:bg-[#9d4fbd]' : 'bg-[#73E58C] hover:bg-[#5db972]'} text-white py-4 rounded-2xl font-bold text-lg shadow-lg transition-all`}
-              >
-                {isRegistered ? 'CANCEL' : 'REGISTER NOW'}
+                onClick={isRegistered ? handleCancel : handleRegister}
+                disabled={!isRegistered && isFull}
+                className={`w-full py-4 rounded-2xl font-bold text-lg shadow-lg transition-all text-white
+                  ${isRegistered ? 'bg-[#B65DD8] hover:bg-[#9d4fbd]' : 
+                    isFull ? 'bg-gray-300 cursor-not-allowed' : 
+                    'bg-[#73E58C] hover:bg-[#5db972]'}`}
+                   >
+                {isRegistered ? 'CANCEL' : isFull ? 'FULLY BOOKED' : 'REGISTER NOW'}
               </button>
             ) : ( user?.role === 'eventorganizer'?(
               null
