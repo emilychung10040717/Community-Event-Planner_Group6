@@ -35,12 +35,12 @@ const Navbar = () => {
           {user?
           (
             <>
-            <Link to ="/" onClick={toggleNav}>Home</Link>
+            <Link to ="/" onClick={toggleNav}>Dashboard</Link>
             <Link to="/profile" onClick={toggleNav}>Profile</Link>
             {user.role === 'eventorganizer' && (
                 <>
-                <Link to="/create-events" onClick={toggleNav}>New Event</Link>
-                <Link to="/view-events" onClick={toggleNav}>Event List</Link>
+                <Link to="/create-events" onClick={toggleNav}>Create Event</Link>
+                <Link to="/view-events" onClick={toggleNav}>My Event List</Link>
                 </>
             )}
             {user?.role === 'admin' && (
