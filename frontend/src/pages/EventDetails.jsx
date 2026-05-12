@@ -2,202 +2,282 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../axiosConfig';
-
+ 
+// ─── 按鈕邏輯 ───
+const ActionButton = ({ user, event, isRegistered, isFull, onRegister, onCancel, onNavigate }) => {
+  const currentUserId = user?._id || user?.id;
+  const isOwner =
+    String(currentUserId) === String(event?.userId) && user?.role === 'eventorganizer';
+ 
+  if (isOwner) {
+    return (
+      <button
+        onClick={() => onNavigate(`/edit-event/${event._id}`)}
+        className="w-full bg-[#7D5A94] hover:bg-[#6a4a7f] text-white py-4 rounded-2xl font-medium text-base transition-all"
+      >
+        ✏️ Update event
+      </button>
+    );
+  }
+ 
+  if (user?.role === 'eventorganizer') return null;
+ 
+  if (user?.role === 'member') {
+    return (
+      <button
+        onClick={isRegistered ? onCancel : onRegister}
+        disabled={!isRegistered && isFull}
+        className={`w-full py-4 rounded-2xl font-medium text-base transition-all
+          ${isRegistered
+            ? 'bg-[#B65DD8] hover:bg-[#9d4fbd] text-white'
+            : isFull
+            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+            : 'bg-[#73E58C] hover:bg-[#5db972] text-green-900'
+          }`}
+      >
+        {isRegistered ? 'Cancel registration' : isFull ? 'Fully booked' : 'Register now'}
+      </button>
+    );
+  }
+ 
+  return (
+    <button
+      onClick={() => onNavigate('/login')}
+      className="w-full bg-[#D1B3E2] hover:bg-[#C2A2D4] text-white py-4 rounded-2xl font-medium text-base transition-all"
+    >
+      Log in to register
+    </button>
+  );
+};
+ 
+// ─── 資訊格子 ───
+const InfoCell = ({ icon, label, value, sub, extra }) => (
+  <div className="flex items-start gap-3">
+    <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center flex-shrink-0 text-[#7D5A94] text-lg">
+      {icon}
+    </div>
+    <div className="min-w-0">
+      <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-0.5">{label}</p>
+      <p className="text-sm font-semibold text-gray-800 leading-snug">{value}</p>
+      {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
+      {extra}
+    </div>
+  </div>
+);
+ 
+// ───  component ───
 const EventDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [event, setEvent] = useState();
+ 
+  const [event, setEvent] = useState(null);
   const [isRegistered, setIsRegistered] = useState(false);
-
+  const [loading, setLoading] = useState(true);
+ 
   useEffect(() => {
+    if (!id) return;
     const fetchEvent = async () => {
       try {
-        console.log("the id of this event is:", id)
+        setLoading(true);
         const response = await axiosInstance.get(`/api/events/event-details/${id}`);
         setEvent(response.data);
         const currentUserId = user?._id || user?.id;
         const participants = response.data.participants || [];
-
-        console.log("participants:", participants);
-        console.log("currentUserId:", currentUserId);
-        console.log("alreadyRegistered:", participants.some(p => String(p) === String(currentUserId)));
-
-        const alreadyRegistered = participants.some(
-          p => String(p) === String(currentUserId)
-        );
-        setIsRegistered(alreadyRegistered);
+        setIsRegistered(participants.some((p) => String(p) === String(currentUserId)));
       } catch (error) {
-        console.error("Fetch error", error);
+        console.error('Fetch error', error);
+      } finally {
+        setLoading(false);
       }
     };
-    if (id) fetchEvent();
+    fetchEvent();
   }, [id, user]);
-
-    const handleRegister = async () => {
-      try {
-        const response = await axiosInstance.post(
-          `/api/events/${event._id}/register`,
-          {},
-          { headers: { Authorization: `Bearer ${user.token}` } }
-        );
-        setEvent(response.data.event);
-        setIsRegistered(true);
-        alert("Successfully registered! 🎉");
-      } catch (error) {
-        alert(error.response?.data?.message || "Register failed");
-      }
-    };
-
-    const handleCancel = async () => {
-      try {
-        const response = await axiosInstance.delete(
-          `/api/events/${event._id}/register`,
-          { headers: { Authorization: `Bearer ${user.token}` } }
-        );
-        setEvent(response.data.event);
-        setIsRegistered(false);
-        alert("Registration cancelled.");
-      } catch (error) {
-        alert(error.response?.data?.message || "Cancel failed");
-      }
-    };
-
-  const currentParticipants = event?.participants?.length || 0;
-  const isFull = currentParticipants >= event?.capacity;
-
-  // 重要：如果 event 還沒抓到，先回傳 Loading，避免後續讀取 event.title 報錯
-  if (!event) {
+ 
+  const handleRegister = async () => {
+    try {
+      const response = await axiosInstance.post(
+        `/api/events/${event._id}/register`,
+        {},
+        { headers: { Authorization: `Bearer ${user.token}` } }
+      );
+      setEvent(response.data.event);
+      setIsRegistered(true);
+      alert('Successfully registered! 🎉');
+    } catch (error) {
+      alert(error.response?.data?.message || 'Register failed');
+    }
+  };
+ 
+  const handleCancel = async () => {
+    try {
+      const response = await axiosInstance.delete(`/api/events/${event._id}/register`, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      setEvent(response.data.event);
+      setIsRegistered(false);
+      alert('Registration cancelled.');
+    } catch (error) {
+      alert(error.response?.data?.message || 'Cancel failed');
+    }
+  };
+ 
+  if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen text-gray-500">
+      <div className="flex justify-center items-center h-screen text-gray-400">
         Loading event details...
       </div>
     );
   }
-  
-  console.log("user._id:", user?._id)
-  console.log("event.userId:", event?.userId)
-  console.log("user.role:", user?.role)
-  console.log("id match:", String(user?._id) === String(event?.userId))
-  return (
-    <div className="max-w mx-auto bg-white min-h-screen pb-10 shadow-lg relative pt-20">
-      {/* 1. 活動圖片 */}
-      <div className="relative h-64 w-full">
-        {event.image ? (
-        <img 
-          src={event.image}
-          alt={event.title} 
-          className="w-full h-full object-cover"
-        />
-      ) : (
-        <img
-          src={`/${event.category?.toLowerCase()}.jpg`}
-          alt={event.title}
-          className="w-full h-full object-cover"
-          onError={(e) => { e.target.src = '/community.jpg'; }}
-        />
-      )}
+ 
+  if (!event) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen text-gray-400 gap-4">
+        <p>Event not found.</p>
+        <button onClick={() => navigate(-1)} className="text-purple-400 underline">Go back</button>
       </div>
+    );
+  }
+ 
+  const currentParticipants = event?.participants?.length || 0;
+  const isFull = currentParticipants >= event?.capacity;
+  const capacityPercent = Math.min(Math.round((currentParticipants / event?.capacity) * 100), 100);
+  const eventDate = event.expStartDate
+    ? new Date(event.expStartDate).toLocaleDateString('en-AU', {
+        day: 'numeric', month: 'long', year: 'numeric',
+      })
+    : 'N/A';
+ 
+  return (
+    <div className="bg-gray-50 min-h-screen pb-16">
+ 
+      {/* ── Hero：全寬圖片 + overlay ── */}
+      {/* pt-16 補 Navbar 高度，讓圖片從 Navbar 下方開始 */}
+      <div className="max-w-5xl mx-auto px-4 pt-6">
 
-      <div className="px-6 py-4">
-        <button 
-          onClick={() => navigate(-1)} 
-           className="absolute top-20 left-4 text-gray-600 flex items-center gap-2 bg-white/80 px-3 py-1.5 rounded-lg shadow-sm hover:bg-white transition-all"
-        >
-          ← Back
-        </button>
-        {/* 2. 活動標題 */}
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">{event.title}</h1>
-
-        {/* 3. 詳細資訊清單 */}
-        <div className="space-y-6">
-          <div className="flex items-start gap-4">
-            <div className="bg-purple-100 p-3 rounded-xl text-purple-600">📅</div>
-            <div>
-              <p className="font-medium text-gray-700">
-                {event.expStartDate ? new Date(event.expStartDate).toLocaleDateString() : 'N/A'}
-              </p>
-              <p className="text-sm text-gray-400">{event.expStartTime} - {event.expFinTime}</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-4">
-            <div className="bg-purple-100 p-3 rounded-xl text-purple-600">📍</div>
-            <div>
-              <p className="font-medium text-gray-700">{event.location}</p>
-              <p className="text-sm text-gray-400">{event.suburb}</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-4">
-            <div className="bg-purple-100 p-3 rounded-xl text-purple-600">🏠</div>
-            <div>
-              <p className="font-medium text-gray-700">{event.organizer}</p>
-              <p className="text-sm text-gray-400">Organizer</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-4">
-            <div className="bg-purple-100 p-3 rounded-xl text-purple-600">👥</div>
-            <div>
-              <p className="font-medium text-gray-700">
-                {currentParticipants} / {event.capacity} ppl
-                {isFull && (
-                  <span className="ml-2 text-xs bg-red-100 text-red-400 px-2 py-0.5 rounded-full">Full</span>
-                )}
-              </p>
-              <p className="text-sm text-gray-400">
-                {event.ticketRequired ? "Ticket Required" : "Free Entry"} 
-                {event.ageRestriction && " • 18+"}
-              </p>
+        <div className="relative h-64 md:h-96 rounded-3xl overflow-hidden shadow-md bg-white">
+          <img
+            src={event.image || `/${event.category?.toLowerCase()}.jpg`}
+            alt={event.title}
+            className="absolute inset-0 w-full h-full object-cover block"
+            onError={(e) => { e.target.src = '/community.jpg'; }}
+          />
+  
+          {/* 深色漸層：上淡下深，讓標題清晰 */}
+          <div
+            className="absolute inset-0"
+            style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.65) 100%)' }}
+          />
+  
+          {/* Back 按鈕 */}
+          <button
+            onClick={() => navigate(-1)}
+            className="absolute top-4 left-4 z-10 flex items-center gap-1.5 text-white text-sm px-4 py-1.5 rounded-full border border-white/50 bg-black/20 hover:bg-black/35 transition-all backdrop-blur-sm"
+          >
+            ← Back
+          </button>
+  
+          {/* 分類 badge */}
+          {event.category && (
+            <span className="absolute top-4 right-4 z-10 bg-[#7D5A94] text-white text-xs font-medium px-3 py-1.5 rounded-full">
+              {event.category}
+            </span>
+          )}
+  
+          {/* 活動標題 */}
+          <div className="absolute bottom-0 left-0 right-0 px-4 pb-5 z-10">
+            <div className="max-w-5xl mx-auto">
+              <h1 className="text-white text-2xl font-bold leading-tight drop-shadow-md">
+                {event.title}
+              </h1>
             </div>
           </div>
         </div>
-
-        {/* 4. About Event */}
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">About Event</h2>
-          <p className="text-gray-500 leading-relaxed">
-            {event.description || "No description provided."}
+      </div>
+ 
+      {/* ── 內容區（置中窄欄）── */}
+      <div className="max-w-5xl mx-auto px-4 py-5 flex flex-col gap-4">
+ 
+        {/* 資訊卡 */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+          <div className="grid grid-cols-2 gap-5">
+            <InfoCell
+              icon="📅"
+              label="Date"
+              value={eventDate}
+              sub={`${event.expStartTime} – ${event.expFinTime}`}
+            />
+            <InfoCell
+              icon="📍"
+              label="Location"
+              value={event.location}
+              sub={event.suburb}
+            />
+            <InfoCell
+              icon="🏢"
+              label="Organizer"
+              value={event.organizer}
+            />
+            <InfoCell
+              icon="👥"
+              label="Spots"
+              value={`${currentParticipants} / ${event.capacity} ppl`}
+              extra={
+                <div className="mt-2 h-1.5 bg-gray-100 rounded-full overflow-hidden w-full">
+                  <div
+                    className="h-full bg-[#7D5A94] rounded-full"
+                    style={{ width: `${capacityPercent}%` }}
+                  />
+                </div>
+              }
+            />
+          </div>
+ 
+          {/* Tags */}
+          <div className="border-t border-gray-100 mt-5 pt-4 flex flex-wrap gap-2">
+            {event.ticketRequired ? (
+              <span className="text-xs px-3 py-1 rounded-full border border-gray-200 text-gray-500 bg-gray-50">
+                🎟 Ticket required
+              </span>
+            ) : (
+              <span className="text-xs px-3 py-1 rounded-full border border-purple-100 text-purple-600 bg-purple-50">
+                Free entry
+              </span>
+            )}
+            {event.ageRestriction && (
+              <span className="text-xs px-3 py-1 rounded-full border border-gray-200 text-gray-500 bg-gray-50">
+                18+
+              </span>
+            )}
+            {isFull && (
+              <span className="text-xs px-3 py-1 rounded-full border border-red-100 text-red-400 bg-red-50">
+                Fully booked
+              </span>
+            )}
+          </div>
+        </div>
+ 
+        {/* About 卡 */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+          <h2 className="text-sm font-semibold text-gray-700 mb-2">About this event</h2>
+          <p className= "text-sm md:text-base text-gray-500 leading-relaxed">
+            {event.description || 'No description provided.'}
           </p>
         </div>
-
-
-        {/* 5. 底部按鈕 */}
-        <div className="mt-10">
-          {/* 確保 ID 比較時型別一致 */}
-          {String(user?.id) === String(event.userId) && user?.role === 'eventorganizer'? (
-            <button 
-              onClick={() => navigate(`/edit-event/${event._id}`)}
-              className="w-full bg-[#A478C8] text-white py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 shadow-lg hover:bg-[#8e62b1] transition-all"
-            >
-              UPDATE ✏️
-            </button>
-
-            ) : ( user?.role === 'member'? (
-              
-              <button 
-                onClick={isRegistered ? handleCancel : handleRegister}
-                disabled={!isRegistered && isFull}
-                className={`w-full py-4 rounded-2xl font-bold text-lg shadow-lg transition-all text-white
-                  ${isRegistered ? 'bg-[#B65DD8] hover:bg-[#9d4fbd]' : 
-                    isFull ? 'bg-gray-300 cursor-not-allowed' : 
-                    'bg-[#73E58C] hover:bg-[#5db972]'}`}
-                   >
-                {isRegistered ? 'CANCEL' : isFull ? 'FULLY BOOKED' : 'REGISTER NOW'}
-              </button>
-            ) : ( user?.role === 'eventorganizer'?(
-              null
-            ) : (
-              <button onClick={() => navigate(`/login`)} className="w-full bg-[#D1B3E2] text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:bg-[#C2A2D4] transition-all">
-                LOG IN NOW
-              </button>
-            )
-            ))}
-        </div>
+ 
+        {/* 按鈕 */}
+        <ActionButton
+          user={user}
+          event={event}
+          isRegistered={isRegistered}
+          isFull={isFull}
+          onRegister={handleRegister}
+          onCancel={handleCancel}
+          onNavigate={navigate}
+        />
       </div>
     </div>
   );
 };
-
+ 
 export default EventDetails;
