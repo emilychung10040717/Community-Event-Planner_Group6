@@ -39,7 +39,7 @@ const AdminUserManagement = () => {
         username: latestUser.username || latestUser.name || '',
         email: latestUser.email || '',
         role: latestUser.role || 'member',
-        organizer: latestUser.organizer || '',  // 
+        organization: latestUser.organization || '',  // 
         phone: latestUser.phone || '',          // 
       });
     }
@@ -228,14 +228,14 @@ const AdminUserManagement = () => {
                       {/* Organizer — 只有 eventorganizer 才顯示 */}
                       {editForm.role === 'eventorganizer' && (
                         <div className="flex flex-col gap-1">
-                          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Organizer</label>
+                          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Organization</label>
                           <input
                             type="text"
-                            name="organizer"
-                            value={editForm.organizer || ''}
+                            name="organization"
+                            value={editForm.organization || ''}
                             onChange={handleFormChange}
                             className="px-3 py-2 rounded-xl border border-purple-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300 bg-white"
-                            placeholder="Organizer name"
+                            placeholder="Organization name"
                           />
                         </div>
                       )}

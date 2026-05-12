@@ -8,6 +8,7 @@ const AddUser = () => {
     name: '',
     email: '',
     phone: '',
+    organization: '',
     password: '',
     confirmPassword: '',
     role: 'member',
@@ -43,6 +44,7 @@ const AddUser = () => {
         name: formData.name,
         email: formData.email,
         phone: formData.phone, 
+        organization: formData.organization, 
         password: formData.password,
         confirmPassword: formData.confirmPassword,
         role: formData.role,
@@ -137,6 +139,23 @@ const AddUser = () => {
               />
             </div>
 
+            {/* Organizerzation */}
+            {roles === "eventorganizer" && (
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Email <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="organization"
+                name="organization"
+                value={formData.organization}
+                onChange={handleChange}
+                placeholder="Enter organization name"
+                className="px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all"
+              />
+            </div>
+            )}
+            
             {/* Phone */}
             <div className="flex flex-col gap-1">
               <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Phone Number</label>

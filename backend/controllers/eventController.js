@@ -14,13 +14,13 @@ res.status(500).json({message: error.message});
 /*Add Event Function*/
 const addEvent = async (req, res) => {
 const{
-    title, capacity, organizer, category, ticketRequired,
+    title, capacity, organization, category, ticketRequired,
     ageRestriction, suburb, location, expStartDate, expStartTime,
     expFinDate,expFinTime, description
 } = req.body;
 try{
 const event = await Event.create({
-    userId: req.user.id,title, capacity, organizer, category, ticketRequired,
+    userId: req.user.id,title, capacity, organization, category, ticketRequired,
     ageRestriction, suburb, location, expStartDate, expStartTime,
     expFinDate,expFinTime, description
 });
@@ -33,7 +33,7 @@ res.status(500).json({message: error.message});
 /*Update Event*/
 const updateEvent = async (req, res) =>{
 const {
-    title, capacity, organizer, category, ticketRequired,
+    title, capacity, organization, category, ticketRequired,
     ageRestriction, suburb, location, expStartDate, expStartTime,
     expFinDate,expFinTime, description
 } = req.body;
@@ -48,7 +48,7 @@ if (event.userId.toString() !== req.user.id) {
 
 event.title = title || event.title;
 event.capacity = capacity || event.capacity;
-event.organizer = organizer || event.organizer;
+event.organization = organization || event.organization;
 event.category = category || event.category;
 event.ticketRequired = ticketRequired ?? event.ticketRequired;
 event.ageRestriction = ageRestriction ?? event.ageRestriction;

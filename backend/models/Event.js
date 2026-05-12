@@ -6,7 +6,7 @@ const eventSchema = new mongoose.Schema({
     //eventId: {type: mongoose.Schema.Types.ObjectId, ref: 'Event', required: true},   //0428  
     title: { type: String, required: true },
     capacity : {type: Number, required: true},
-    organizer : {type: String, required: true},
+    organization : {type: String, required: true},
     category : {type: String, required: true},
     ticketRequired  : { type: Boolean, required: true },
     ageRestriction  : { type: Boolean, required: true },

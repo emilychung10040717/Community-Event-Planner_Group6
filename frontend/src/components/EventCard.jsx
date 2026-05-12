@@ -56,7 +56,7 @@ const defaultImage = categoryImages[event.category] || '/community.jpg';
         </div>
         
         <div className="info-row">
-          <p>🏠 {event.organizer}</p>
+          <p>🏠 {event.organization}</p>
           <p>📍 {event.location}</p>
         </div>
         <div className="card-actions">

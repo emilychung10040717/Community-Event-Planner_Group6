@@ -10,7 +10,7 @@ import { useParams } from 'react-router-dom';
 const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
 
   const { user } = useAuth();
-  const [formData, setFormData] = useState({ title: '', capacity: '', organizer : '', category: '', ticketRequired : '', ageRestriction : '', 
+  const [formData, setFormData] = useState({ title: '', capacity: '', organization : '', category: '', ticketRequired : '', ageRestriction : '', 
         suburb : '', location : '', expStartDate : null, expStartTime : '', expFinDate : '', expFinTime : '', description: '', image: ''});
   const navigate = useNavigate();
   const { id } = useParams();
@@ -36,7 +36,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
       setFormData({
         title: editingEvent.title,
         capacity: editingEvent.capacity,
-        organizer : editingEvent.organizer,
+        organization : editingEvent.organization,
         category :editingEvent.category,
         ticketRequired : editingEvent.ticketRequired,
         ageRestriction : editingEvent.ageRestriction,
@@ -53,7 +53,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
       //result to default
     } else {
       setFormData({ 
-        title: '', capacity: '', organizer : '', category: '', ticketRequired : '', ageRestriction : '', 
+        title: '', capacity: '', organization : '', category: '', ticketRequired : '', ageRestriction : '', 
         suburb : '', location : '', expStartDate : null, expStartTime : '', expFinDate : '', expFinTime : '', description: '' 
       });
     }
@@ -70,7 +70,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
         setFormData({
           title: event.title || '',
           capacity: event.capacity || '',
-          organizer: event.organizer || '',
+          organization: event.organization || '',
           category: event.category || '',
           ticketRequired: event.ticketRequired ?? false,
           ageRestriction: event.ageRestriction ?? false,
@@ -151,7 +151,7 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
 
         //
         setEditingEvent(null);
-        setFormData({ title: '', capacity: '', organizer : '', category: '', ticketRequired : '', ageRestriction : '', 
+        setFormData({ title: '', capacity: '', organization : '', category: '', ticketRequired : '', ageRestriction : '', 
         suburb : '', location : '', expStartDate : null, expStartTime : '', expFinDate : '', expFinTime : '', description: '', image: ''  });
 
     } catch (error) {
@@ -249,13 +249,13 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="organizer" className="block text-gray-700 font-medium">Organizer<span className="text-red-400">*</span></label>
+          <label htmlFor="organization" className="block text-gray-700 font-medium">Organization<span className="text-red-400">*</span></label>
           <input
-            id="organizer"
+            id="organization"
             type="text"
-            value={formData.organizer}
-            placeholder="Enter the organizer of the event"
-            onChange={(e) => setFormData({ ...formData, organizer: e.target.value })}
+            value={formData.organization}
+            placeholder="Enter the organization of the event"
+            onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
             className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 placeholder-gray-300"
           />
         </div>
