@@ -91,7 +91,7 @@ const Navbar = () => {
                 </>
               )}
 
-              {user?.role === 'member' && (
+              {user && (
                 <input
                   type="text"
                   value={searchTerm}

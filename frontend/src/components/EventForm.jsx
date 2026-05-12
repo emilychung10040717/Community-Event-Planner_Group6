@@ -535,4 +535,3 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
 
 export default EventForm;
 
-
