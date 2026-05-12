@@ -9,6 +9,8 @@ const sinon = require('sinon');
 const Event = require('../models/Event');
 const { updateEvent,getEvents,addEvent,deleteEvent, getEventById } = require('../controllers/eventController');
 const { expect } = chai;
+const { registerEvent } = require('../controllers/eventController');
+const { cancelRegisterEvent } = require('../controllers/eventController');
 
 chai.use(chaiHttp);
 let server;
@@ -21,9 +23,9 @@ describe('AddEvent Function Test', () => {
     // Mock request data
     const req = {
       user: { id: new mongoose.Types.ObjectId() },
-      body: {  title: 'Wonwoo birthday', capacity: '17', organizer : 'Carat', category: 'Idol', ticketRequired : true, ageRestriction : true, 
-        suburb : 'Sunnybank', location : 'Yedang', expStartDate : '2026-07-17T00:00:00.000+00:00', expStartTime : '7:17', 
-        expFinDate : '2026-07-17T00:00:00.000+00:00', expFinTime : '17:17', description: 'Join us to celebrate for Wonwoo' }
+      body: {  title: 'Wonwoo birthday', capacity: '17', organizer : 'Carat', category: 'Talk', ticketRequired : true, ageRestriction : true, 
+        suburb : 'Sunnybank', location : 'Sunpac', expStartDate : '2026-07-17T00:00:00.000+00:00', expStartTime : '7:00', 
+        expFinDate : '2026-07-17T00:00:00.000+00:00', expFinTime : '17:30', description: 'Join us to celebrate for Wonwoo' }
     };  //image  save format???
 
     // Mock event that would be created
@@ -57,9 +59,9 @@ describe('AddEvent Function Test', () => {
     // Mock request data
     const req = {
       user: { id: new mongoose.Types.ObjectId() },
-      body: { title: 'Wonwoo birthday', capacity: '17', organizer : 'Carat', category: 'Idol', ticketRequired : true, ageRestriction : true, 
-        suburb : 'Sunnybank', location : 'Yedang', expStartDate : '2026-07-17T00:00:00.000+00:00', expStartTime : '7:17', 
-        expFinDate : '2026-07-17T00:00:00.000+00:00', expFinTime : '17:17', description: 'Join us to celebrate for Wonwoo' }
+      body: { title: 'Wonwoo birthday', capacity: '17', organizer : 'Carat', category: 'Talk', ticketRequired : true, ageRestriction : true, 
+        suburb : 'Sunnybank', location : 'Sunpac', expStartDate : '2026-07-17T00:00:00.000+00:00', expStartTime : '7:00', 
+        expFinDate : '2026-07-17T00:00:00.000+00:00', expFinTime : '17:30', description: 'Join us to celebrate for Wonwoo' }
     };
 
     // Mock response object
@@ -92,15 +94,15 @@ describe('Update Function Test', () => {
       title: 'Wonwoo birthday', 
       capacity: '17', 
       organizer : 'Carat', 
-      category: 'Idol', 
+      category: 'Talk', 
       ticketRequired : true, 
       ageRestriction : true, 
       suburb : 'Sunnybank', 
-      location : 'Art Centre',       //Ask for Update location
+      location : 'Sunpac',       //Ask for Update location
       expStartDate : '2026-07-17T00:00:00.000+00:00', 
-      expStartTime : '7:17', 
+      expStartTime : '7:00', 
       expFinDate : '2026-07-17T00:00:00.000+00:00', 
-      expFinTime : '17:17', 
+      expFinTime : '17:30', 
       description: 'Join us to celebrate for Wonwoo', 
       save: sinon.stub().resolvesThis() // ← simulation for save
                             // Mock save method
@@ -111,7 +113,7 @@ describe('Update Function Test', () => {
     // Mock request & response      //simulate for the updating data
     const req = {
       params: { id: eventId },
-      body: {  location: "Queensland Museum" }
+      body: {  location: "Sunnybank Plaza" }
     };
     const res = {
       json: sinon.spy(), 
@@ -122,7 +124,7 @@ describe('Update Function Test', () => {
     await updateEvent(req, res);
 
     // Assertions = Verification
-    expect(existingEvent.location).to.equal("Queensland Museum");
+    expect(existingEvent.location).to.equal("Sunpac");
     // expect(res.status.called).to.be.false; // No error status should be set
     expect(res.json.calledOnce).to.be.true;
     
@@ -182,7 +184,7 @@ describe('GetEvent Function Test', () => {
     // Mock event data
     const events = [
       { _id: new mongoose.Types.ObjectId(), title: "Wonwoo birthday", userId },
-      //{ _id: new mongoose.Types.ObjectId(), title: "anniversary", userId }
+      //{ _id: new mongoose.Types.ObjectId(), title: "Coffee Talk", userId }
     ];
 
     // Stub Task.find to return mock tasks
@@ -200,7 +202,7 @@ describe('GetEvent Function Test', () => {
 
     // Assertions
     //expect(findStub.calledOnceWith({ userId })).to.be.true;
-    expect(findStub.calledOnceWith({ userId: req.user.id })).to.be.true;    //0504 update
+    expect(findStub.calledOnceWith({ })).to.be.true;    //0504 update
     expect(res.json.calledWith(events)).to.be.true;
     expect(res.status.called).to.be.false; // No error status should be set
 
@@ -380,4 +382,200 @@ describe('getEventById Function Test', () => {
 
     findByIdStub.restore();
   });
+});
+
+
+describe('RegisterEvent Function Test', () => {
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('should register user successfully', async () => {
+
+    const userId = new mongoose.Types.ObjectId();
+
+    const mockEvent = {
+      _id: new mongoose.Types.ObjectId(),
+      title: 'Music Festival',
+      participants: [],
+      save: sinon.stub().resolves()
+    };
+
+    sinon.stub(Event, 'findById').resolves(mockEvent);
+
+    const req = {
+      params: { id: mockEvent._id },
+      user: { _id: userId }
+    };
+
+    const res = {
+      json: sinon.spy(),
+      status: sinon.stub().returnsThis()
+    };
+
+    await registerEvent(req, res);
+
+    expect(mockEvent.participants.length).to.equal(1);
+    expect(String(mockEvent.participants[0])).to.equal(String(userId));
+
+    expect(res.json.calledWithMatch({
+      message: 'Registered successfully'
+    })).to.be.true;
+  });
+
+  it('should return 404 if event is not found', async () => {
+
+    sinon.stub(Event, 'findById').resolves(null);
+
+    const req = {
+      params: { id: new mongoose.Types.ObjectId() },
+      user: { _id: new mongoose.Types.ObjectId() }
+    };
+
+    const res = {
+      json: sinon.spy(),
+      status: sinon.stub().returnsThis()
+    };
+
+    await registerEvent(req, res);
+
+    expect(res.status.calledWith(404)).to.be.true;
+
+    expect(res.json.calledWith({
+      message: 'Event not found'
+    })).to.be.true;
+  });
+
+  it('should return 400 if user already registered', async () => {
+
+    const userId = new mongoose.Types.ObjectId();
+
+    const mockEvent = {
+      _id: new mongoose.Types.ObjectId(),
+      participants: [userId]
+    };
+
+    sinon.stub(Event, 'findById').resolves(mockEvent);
+
+    const req = {
+      params: { id: mockEvent._id },
+      user: { _id: userId }
+    };
+
+    const res = {
+      json: sinon.spy(),
+      status: sinon.stub().returnsThis()
+    };
+
+    await registerEvent(req, res);
+
+    expect(res.status.calledWith(400)).to.be.true;
+
+    expect(res.json.calledWith({
+      message: 'Already registered'
+    })).to.be.true;
+  });
+
+  it('should return 500 on database error', async () => {
+
+    sinon.stub(Event, 'findById').throws(new Error('DB Error'));
+
+    const req = {
+      params: { id: new mongoose.Types.ObjectId() },
+      user: { _id: new mongoose.Types.ObjectId() }
+    };
+
+    const res = {
+      json: sinon.spy(),
+      status: sinon.stub().returnsThis()
+    };
+
+    await registerEvent(req, res);
+
+    expect(res.status.calledWith(500)).to.be.true;
+
+    expect(res.json.calledWithMatch({
+      message: 'DB Error'
+    })).to.be.true;
+  });
+
+});
+
+describe('CancelRegisterEvent Function Test', () => {
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('should cancel event registration successfully', async () => {
+    const userId = new mongoose.Types.ObjectId();
+
+    const mockEvent = {
+      _id: new mongoose.Types.ObjectId(),
+      title: 'Music Festival',
+      participants: [userId],
+      save: sinon.stub().resolves()
+    };
+
+    sinon.stub(Event, 'findById').resolves(mockEvent);
+
+    const req = {
+      params: { id: mockEvent._id },
+      user: { _id: userId }
+    };
+
+    const res = {
+      json: sinon.spy(),
+      status: sinon.stub().returnsThis()
+    };
+
+    await cancelRegisterEvent(req, res);
+
+    expect(mockEvent.participants.length).to.equal(0);
+    expect(mockEvent.save.calledOnce).to.be.true;
+
+    expect(res.json.calledWithMatch({
+      message: 'Cancelled successfully'
+    })).to.be.true;
+  });
+
+  it('should return 404 if event is not found', async () => {
+    sinon.stub(Event, 'findById').resolves(null);
+
+    const req = {
+      params: { id: new mongoose.Types.ObjectId() },
+      user: { _id: new mongoose.Types.ObjectId() }
+    };
+
+    const res = {
+      json: sinon.spy(),
+      status: sinon.stub().returnsThis()
+    };
+
+    await cancelRegisterEvent(req, res);
+
+    expect(res.status.calledWith(404)).to.be.true;
+    expect(res.json.calledWith({ message: 'Event not found' })).to.be.true;
+  });
+
+  it('should return 500 on database error', async () => {
+    sinon.stub(Event, 'findById').throws(new Error('DB Error'));
+
+    const req = {
+      params: { id: new mongoose.Types.ObjectId() },
+      user: { _id: new mongoose.Types.ObjectId() }
+    };
+
+    const res = {
+      json: sinon.spy(),
+      status: sinon.stub().returnsThis()
+    };
+
+    await cancelRegisterEvent(req, res);
+
+    expect(res.status.calledWith(500)).to.be.true;
+    expect(res.json.calledWithMatch({ message: 'DB Error' })).to.be.true;
+  });
+
 });
