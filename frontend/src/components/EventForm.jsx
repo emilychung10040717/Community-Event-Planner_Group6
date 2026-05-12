@@ -388,7 +388,30 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
         <select
           id="expStartTime"
           value={formData.expStartTime}
-          onChange={(e) => setFormData({ ...formData, expStartTime: e.target.value })}
+          onChange={(e) => {
+            const selectedTime = e.target.value;
+            const {expStartDate, expFinDate, expFinTime} = formData;
+
+            //change time string into minutes
+            const timeToMinutes = (timeStr) =>{
+              if (!timeStr) return 0;
+              const [hours,minutes] = timeStr.split(':').map(Number);
+              return hours*60 + minutes;
+            };
+
+            // check if it's the same date
+            const isSameDay = expStartDate && expFinDate && new Date(expStartDate).toDateString() === new Date(expFinDate).toDateString()
+
+            //
+            if (isSameDay && expFinTime){
+              if (timeToMinutes(selectedTime) >= timeToMinutes(expFinTime)){
+                alert ("The Start Time should be earlier than the Finish Time, please choose another time")
+                setFormData({...formData, expStartTime:""});
+                return;
+              }
+            }
+            setFormData({ ...formData, expStartTime: selectedTime });
+          }}
           className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 bg-white appearance-none cursor-pointer"
         >
           <option value="" disabled>Select a time</option>
@@ -399,7 +422,6 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
           ))}
         </select>
         </div>
-
       </div>
 
       {/* row 5 finish date & time*/}
@@ -441,7 +463,30 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
         <select
           id="expFinTime"
           value={formData.expFinTime}
-          onChange={(e) => setFormData({ ...formData, expFinTime: e.target.value })}
+          onChange={(e) => {
+            const selectedTime = e.target.value;
+            const {expStartDate, expFinDate, expStartTime} = formData;
+
+            //change time string into minutes
+            const timeToMinutes = (timeStr) =>{
+              if (!timeStr) return 0;
+              const [hours,minutes] = timeStr.split(':').map(Number);
+              return hours*60 + minutes;
+            };
+
+            // check if it's the same date
+            const isSameDay = expStartDate && expFinDate && new Date(expStartDate).toDateString() === new Date(expFinDate).toDateString()
+
+            //
+            if (isSameDay && expStartTime){
+              if (timeToMinutes(selectedTime) <= timeToMinutes(expStartTime)){
+                alert ("The Finish Time should be later than the Start Time, please choose another time")
+                setFormData({...formData, expFinTime:""});
+                return;
+              }
+            }
+            setFormData({ ...formData, expFinTime: selectedTime });
+          }}
           className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 bg-white appearance-none cursor-pointer"
         >
           <option value="" disabled>Select a time</option>
