@@ -23,7 +23,7 @@ describe('AddEvent Function Test', () => {
     // Mock request data
     const req = {
       user: { id: new mongoose.Types.ObjectId() },
-      body: {  title: 'Wonwoo birthday', capacity: '17', organizer : 'Carat', category: 'Talk', ticketRequired : true, ageRestriction : true, 
+      body: {  title: 'Wonwoo birthday', capacity: '17', organization : 'Carat', category: 'Talk', ticketRequired : true, ageRestriction : true, 
         suburb : 'Sunnybank', location : 'Sunpac', expStartDate : '2026-07-17T00:00:00.000+00:00', expStartTime : '7:00', 
         expFinDate : '2026-07-17T00:00:00.000+00:00', expFinTime : '17:30', description: 'Join us to celebrate for Wonwoo' }
     };  //image  save format???
@@ -59,7 +59,7 @@ describe('AddEvent Function Test', () => {
     // Mock request data
     const req = {
       user: { id: new mongoose.Types.ObjectId() },
-      body: { title: 'Wonwoo birthday', capacity: '17', organizer : 'Carat', category: 'Talk', ticketRequired : true, ageRestriction : true, 
+      body: { title: 'Wonwoo birthday', capacity: '17', organization : 'Carat', category: 'Talk', ticketRequired : true, ageRestriction : true, 
         suburb : 'Sunnybank', location : 'Sunpac', expStartDate : '2026-07-17T00:00:00.000+00:00', expStartTime : '7:00', 
         expFinDate : '2026-07-17T00:00:00.000+00:00', expFinTime : '17:30', description: 'Join us to celebrate for Wonwoo' }
     };
@@ -93,7 +93,7 @@ describe('Update Function Test', () => {
     const existingEvent = {
       title: 'Wonwoo birthday', 
       capacity: '17', 
-      organizer : 'Carat', 
+      organization : 'Carat', 
       category: 'Talk', 
       ticketRequired : true, 
       ageRestriction : true, 

@@ -215,8 +215,8 @@ const EventDetails = () => {
             />
             <InfoCell
               icon="🏢"
-              label="Organizer"
-              value={event.organizer}
+              label="Organization"
+              value={event.organization}
             />
             <InfoCell
               icon="👥"

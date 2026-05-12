@@ -8,7 +8,7 @@ const Profile = () => {
     name: '',
     email: '',
     phone: '',
-    organizer: '',
+    organization: '',
     role:'',
   });
   const [loading, setLoading] = useState(false);
@@ -25,7 +25,7 @@ const Profile = () => {
           name: response.data.name,
           email: response.data.email,
           phone: response.data.phone || '',
-          organizer: response.data.organizer || '',
+          organization: response.data.organization || '',
           role: response.data.role || '',
         });
       } catch (error) {
@@ -101,8 +101,8 @@ const Profile = () => {
             <input
               type="text"
               placeholder="Organizer"
-              value={formData.organizer}
-              onChange={(e) => setFormData({ ...formData, organizer: e.target.value })}
+              value={formData.organization}
+              onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
               className="w-full pl-24 pr-4 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all"
             />
         </div>

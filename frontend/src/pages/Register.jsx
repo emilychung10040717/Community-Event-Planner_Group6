@@ -5,7 +5,7 @@ import { Eye, EyeOff } from 'lucide-react';
 
 
 const Register = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', organizer: '', password: '', confirmPassword: '', role: ''});
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', organization: '', password: '', confirmPassword: '', role: ''});
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -142,15 +142,15 @@ const Register = () => {
         </div> 
         {formData.role === 'eventorganizer' && ( 
           <div className ="relative">
-            <span className="absolute inset-y-0 left-4 flex items-center text-Black-400">Organizer   
+            <span className="absolute inset-y-0 left-4 flex items-center text-Black-400">Organization  
             </span>
           <input
             type="text"
-            name="Organisation" // connection for handle change
-            placeholder="Organisation you belong"
-            value={formData.organizer}
-            onChange={(e) => setFormData({ ...formData, organizer: e.target.value })}
-            className="w-full pl-24 pr-4 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all"
+            name="Organization" // connection for handle change
+            placeholder="Organization you belong"
+            value={formData.organization}
+            onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
+            className="w-full pl-32 pr-4 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all"
           />
           </div>
         )}

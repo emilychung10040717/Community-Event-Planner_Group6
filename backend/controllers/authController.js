@@ -87,10 +87,10 @@ const updateUserProfile = async (req, res) => {
         user.name = name || user.name;
         user.email = email || user.email;
         user.phone = phone || user.phone;
-        user.organizer = organizer || user.organizer;
+        user.organization = organizer || user.organization;
 
         const updatedUser = await user.save();
-        res.json({ id: updatedUser.id, name: updatedUser.name, email: updatedUser.email, phone: updatedUser.phone, organizer: updatedUser.organizer, token: generateToken(updatedUser.id) });
+        res.json({ id: updatedUser.id, name: updatedUser.name, email: updatedUser.email, phone: updatedUser.phone, organization: updatedUser.organization, token: generateToken(updatedUser.id) });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -99,7 +99,7 @@ const updateUserProfile = async (req, res) => {
 
 // 新增：取得所有使用者 (供 Admin 使用)
 const getUsers = async (req, res) => {
-    console.log("當前請求者資訊:", req.user); // <--- 加這行
+    console.log("The request information:", req.user); // <--- 加這行
     try {
         // 抓取所有使用者，但不回傳密碼
         const users = await User.find({});
@@ -131,7 +131,7 @@ const updateUserById = async (req, res) => {
         user.name     = username || user.name;
         user.email    = email    || user.email;
         user.phone    = phone    || user.phone;
-        user.organizer= organizer|| user.organizer;
+        user.organization= organizer|| user.organization;
         user.role     = role     || user.role;
     
         const updatedUser = await user.save();
@@ -140,7 +140,7 @@ const updateUserById = async (req, res) => {
             name: updatedUser.name, 
             phone: updatedUser.phone,
             email: updatedUser.email, 
-            organizer: updatedUser.organizer,
+            organization: updatedUser.organization,
             role: updatedUser.role 
         });
     } catch (error) {
@@ -167,7 +167,7 @@ const addUser = async (req, res) => {
         const userExists = await User.findOne({ email });
         if (userExists) return res.status(400).json({ message: 'User already exists' });
         
-        const user = await User.create({ name, email, phone, organizer, password, role});
+        const user = await User.create({ name, email, phone, organization, password, role});
         res.status(201).json({ id: user.id, name: user.name, email: user.email, role: user.role, token: generateToken(user.id) });
     } catch (error) {
         console.log(error);
