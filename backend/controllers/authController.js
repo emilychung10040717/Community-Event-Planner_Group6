@@ -8,7 +8,7 @@ const generateToken = (id) => {
 };
 
 const registerUser = async (req, res) => {
-    const { name, email, phone, organizer, password, confirmPassword, role } = req.body;
+    const { name, email, phone, organization, password, confirmPassword, role } = req.body;
     try {
         if (password !== confirmPassword){
             return res.status(400).json({message: 'Confirm password is not match, please enter again!'});
@@ -16,7 +16,7 @@ const registerUser = async (req, res) => {
         const userExists = await User.findOne({ email });
         if (userExists) return res.status(400).json({ message: 'User already exists' });
         
-        const user = await User.create({ name, email, phone, organizer, password, role});
+        const user = await User.create({ name, email, phone, organization, password, role});
         res.status(201).json({ id: user.id, name: user.name, email: user.email, role: user.role, token: generateToken(user.id) });
     } catch (error) {
         console.log(error);
@@ -70,7 +70,7 @@ const getProfile = async (req, res) => {
         name: user.name,
         email: user.email,
         phone: user.phone,
-        organizer: user.organizer,
+        organization: user.organization,
         role: user.role,     //add on the response of role data
       });
     } catch (error) {
@@ -83,11 +83,11 @@ const updateUserProfile = async (req, res) => {
         const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
-        const { name, email, phone, organizer} = req.body;
+        const { name, email, phone, organization} = req.body;
         user.name = name || user.name;
         user.email = email || user.email;
         user.phone = phone || user.phone;
-        user.organization = organizer || user.organization;
+        user.organization = organization || user.organization;
 
         const updatedUser = await user.save();
         res.json({ id: updatedUser.id, name: updatedUser.name, email: updatedUser.email, phone: updatedUser.phone, organization: updatedUser.organization, token: generateToken(updatedUser.id) });
@@ -127,11 +127,11 @@ const updateUserById = async (req, res) => {
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
-        const { username, email, phone, organizer, role } = req.body;
+        const { username, email, phone, organization, role } = req.body;
         user.name     = username || user.name;
         user.email    = email    || user.email;
         user.phone    = phone    || user.phone;
-        user.organization= organizer|| user.organization;
+        user.organization= organization|| user.organization;
         user.role     = role     || user.role;
     
         const updatedUser = await user.save();
@@ -161,7 +161,7 @@ const deleteUserById = async (req, res) => {
 };
 
 const addUser = async (req, res) => {
-    const { name, email, phone, organizer, password, role } = req.body;
+    const { name, email, phone, organization, password, role } = req.body;
     try {
 
         const userExists = await User.findOne({ email });

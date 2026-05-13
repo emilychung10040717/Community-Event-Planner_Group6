@@ -25,7 +25,7 @@ const AddUser = () => {
       alert('Please fill in all required fields.');
       return;
     }
-    if (!formData.role) {                        // ✅ 加這個
+    if (!formData.role) {                        
       alert('Please select a role.');
       return;
     }
@@ -140,13 +140,13 @@ const AddUser = () => {
             </div>
 
             {/* Organizerzation */}
-            {roles === "eventorganizer" && (
+            {formData.role === "eventorganizer" && (
             <div className="flex flex-col gap-1">
               <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                Email <span className="text-red-400">*</span>
+                Organization <span className="text-red-400">*</span>
               </label>
               <input
-                type="organization"
+                type="text"
                 name="organization"
                 value={formData.organization}
                 onChange={handleChange}
