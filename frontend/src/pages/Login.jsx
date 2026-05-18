@@ -3,13 +3,30 @@ import { useAuth } from '../context/AuthContext';
 import {Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 
+// ── Strategy Pattern ──────────────────────────────────────────
+
+const createNavigationStrategies = (navigate) => ({
+  eventorganizer: () => navigate("/"),
+  member:          () => navigate("/"),
+  admin:           () => navigate("/admin"),
+});
+ 
+// Context
+const executeNavigationStrategy = (navigate, role) => {
+  const strategies = createNavigationStrategies(navigate);
+  const strategy = strategies[role] ?? (() => navigate("/"));
+  strategy();
+};
+// ─────────────────────────────────────────────────────────────
+
+
 
 const Login = () => {
-  const [formData, setFormData] = useState({ email: '', password: '', role:'' });   
+  const [formData, setFormData] = useState({ email: '', password: ''});   
   const { login } = useAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
+
 
 const handleChange = (e) => {
   const { name, value } = e.target;
@@ -25,15 +42,9 @@ const handleSubmit = async (e) => {
   try {
     const userData = await login(formData);
     
-    //  (Strategy Pattern)
-    const roleRoutes = {
-      "eventorganizer": "/",
-      "member": "/",
-      "admin": "/admin" 
-
-    };
-    navigate(roleRoutes[userData.role] || "/");
-
+    // Strategy Pattern
+      executeNavigationStrategy(navigate, userData.role);
+    
   } catch (err) {
     
     switch (err.message) {
@@ -64,9 +75,10 @@ const handleSubmit = async (e) => {
           </span>
           <input
             type="email"
+            name="email"
             placeholder="abc@email.com"
             value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            onChange={handleChange}
             className="w-full pl-24 pr-4 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all"
           />
           </div>
@@ -78,7 +90,7 @@ const handleSubmit = async (e) => {
             name="password"
             placeholder="Enter your password"
             value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            onChange={handleChange}
             className="w-full pl-24 pr-12 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all"
           />
           <button

@@ -22,13 +22,14 @@ const protect = async (req, res, next) => {
     }
 };
 
-// 檢查是否為管理員的中間件
+// Middleware to check whether the user is an administrator
 const admin = (req, res, next) => {
-  // req.user 是在之前的 protect 中間件裡從資料庫抓出來並存進去的
+  // // req.user is retrieved from the previous protect middleware
+  // after validating the user from the database
   if (req.user && req.user.role === 'admin') {
-    next(); // 是 admin，放行
+    next(); // User is admin, allow access
   } else {
-    res.status(403).json({ message: '權限不足，僅限管理員存取' });
+    res.status(403).json({ message: 'Access denied. Admin privileges only.' });
   }
 };
 module.exports = { protect,admin };
