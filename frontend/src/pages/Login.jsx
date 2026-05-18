@@ -102,24 +102,6 @@ const handleSubmit = async (e) => {
           </button>
         </div>
         
-        {/* forget passwoord */}
-        {/* <div className="text-right">
-          <a href="#" className="text-sm text-gray-600 hover:underline">Forgot Password?</a>
-        </div> */}
-
-        {/*<div className="text-left">
-          <label className="flex items-center space-x-2">
-          <input
-            type="radio"
-            name="userType"
-            className="w-4 h-4 accent-purple-400"
-            //disabled           // diable for the functionality
-          />
-          <span className="text-gray-400 text-sm font-light leading-none">
-            I'm ADMIN <br/>
-          </span>
-          </label>
-        </div>*/}
 
         {/* Login Button*/}
         <button

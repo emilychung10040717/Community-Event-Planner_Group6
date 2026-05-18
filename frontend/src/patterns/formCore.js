@@ -38,11 +38,11 @@ export const updateField = (setFormData, fieldName, newValue, context) => {
     const result = validate(newValue, context);
     if (!result.isValid) {
       alert(result.msg);
-      return false; // 驗證失敗，阻斷執行
+      return false; 
     }
   }
 
-  // Verification pass: update the statrus
+  // Verification pass: update the status
   setFormData(prev => {
     const nextState = { ...prev, [fieldName]: newValue };
     
