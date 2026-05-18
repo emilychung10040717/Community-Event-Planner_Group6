@@ -278,7 +278,11 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
 
         <div className="space-y-2">
           <label htmlFor="expStartTime" className="block text-gray-700 font-medium ml-1">Expected Start Time<span className="text-red-400">*</span></label>
-          <select id="expStartTime" value={formData.expStartTime} onChange={(e) => changeField('expStartTime', e.target.value)} className="w-full p-4 border border-gray-200 rounded-2xl bg-white cursor-pointer">
+          <select 
+                id="expStartTime" 
+                value={formData.expStartTime} 
+                onChange={(e) => changeField('expStartTime', e.target.value)} 
+                className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 bg-white appearance-none cursor-pointer">
             <option value="" disabled>Select a time</option>
             {timeOptions.map((time) => <option key={time} value={time}>{time}</option>)}
           </select>
@@ -301,7 +305,11 @@ const EventForm = ({ events, setEvents, editingEvent, setEditingEvent }) => {
 
         <div className="space-y-2">
           <label htmlFor="expFinTime" className="block text-gray-700 font-medium ml-1">Expected Finish Time<span className="text-red-400">*</span></label>
-          <select id="expFinTime" value={formData.expFinTime} onChange={(e) => changeField('expFinTime', e.target.value)} className="w-full p-4 border border-gray-200 rounded-2xl bg-white cursor-pointer">
+          <select 
+              id="expFinTime" 
+              value={formData.expFinTime} 
+              onChange={(e) => changeField('expFinTime', e.target.value)} 
+              className="w-full p-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-100 bg-white appearance-none cursor-pointer">
             <option value="" disabled>Select a time</option>
             {timeOptions.map((time) => <option key={time} value={time}>{time}</option>)}
           </select>
