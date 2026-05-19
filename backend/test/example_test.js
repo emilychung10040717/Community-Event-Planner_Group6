@@ -7,6 +7,10 @@ const connectDB = require('../config/db');
 const mongoose = require('mongoose');
 const sinon = require('sinon');
 const Event = require('../models/Event');
+const User = require('../models/User');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const { registerUser, loginUser, getProfile } = require('../controllers/authController');
 const { updateEvent,getEvents,addEvent,deleteEvent, getEventById } = require('../controllers/eventController');
 const { expect } = chai;
 const { registerEvent } = require('../controllers/eventController');
@@ -576,6 +580,268 @@ describe('CancelRegisterEvent Function Test', () => {
 
     expect(res.status.calledWith(500)).to.be.true;
     expect(res.json.calledWithMatch({ message: 'DB Error' })).to.be.true;
+  });
+
+});
+
+//add a scenario for testing "register user" functionality
+describe('RegisterUser Function Test', () => {
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('should register user successfully', async () => {
+    const req = {
+      body: {
+        name: 'Test User',
+        email: 'test@example.com',
+        phone: '0412111111',
+        password: 'Test1234',
+        confirmPassword: 'Test1234',
+        role: 'member'
+      }
+    };
+
+    const createdUser = {
+      id: new mongoose.Types.ObjectId(),
+      name: 'Test User',
+      email: 'test@example.com',
+      role: 'member'
+    };
+
+    // Stub User.findOne (no existing user) and User.create
+    sinon.stub(User, 'findOne').resolves(null);
+    sinon.stub(User, 'create').resolves(createdUser);
+    sinon.stub(jwt, 'sign').returns('fake-jwt-token');
+
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.spy()
+    };
+
+    await registerUser(req, res);
+
+    expect(res.status.calledWith(201)).to.be.true;
+    expect(res.json.calledWithMatch({ 
+      email: 'test@example.com',
+      role: 'member'
+    })).to.be.true;
+  });
+
+  it('should return 400 if user already exists', async () => {
+    const req = {
+      body: {
+        name: 'Test User',
+        email: 'existing@example.com',
+        phone: '0412111111',
+        password: 'Test1234',
+        confirmPassword: 'Test1234',
+        role: 'member'
+      }
+    };
+
+    // Stub User.findOne to return an existing user
+    sinon.stub(User, 'findOne').resolves({ email: 'existing@example.com' });
+
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.spy()
+    };
+
+    await registerUser(req, res);
+
+    expect(res.status.calledWith(400)).to.be.true;
+    expect(res.json.calledWith({ message: 'User already exists' })).to.be.true;
+  });
+
+  it('should return 400 if passwords do not match', async () => {
+    const req = {
+      body: {
+        name: 'Test User',
+        email: 'test@example.com',
+        phone: '0412111111',
+        password: 'Test1234',
+        confirmPassword: 'WrongPassword',
+        role: 'member'
+      }
+    };
+
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.spy()
+    };
+
+    await registerUser(req, res);
+
+    expect(res.status.calledWith(400)).to.be.true;
+    const jsonArg = res.json.getCall(0).args[0];
+    expect(jsonArg.message).to.match(/password/i);
+  });
+
+});
+
+
+//add a scenario for testing "login user" functionality
+describe('LoginUser Function Test', () => {
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('should login successfully with correct credentials', async () => {
+    const mockUser = {
+      id: new mongoose.Types.ObjectId(),
+      name: 'Test User',
+      email: 'test@example.com',
+      password: 'hashedPassword',
+      role: 'member'
+    };
+
+    const req = {
+      body: {
+        email: 'test@example.com',
+        password: 'Test1234',
+        role: 'member'
+      }
+    };
+
+    // Stub User.findOne with select chain
+    sinon.stub(User, 'findOne').returns({
+      select: sinon.stub().resolves(mockUser)
+    });
+    sinon.stub(bcrypt, 'compare').resolves(true);
+    sinon.stub(jwt, 'sign').returns('fake-jwt-token');
+
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.spy()
+    };
+
+    await loginUser(req, res);
+
+    expect(res.json.calledWithMatch({ 
+      email: 'test@example.com',
+      role: 'member'
+    })).to.be.true;
+  });
+
+  it('should return 401 if password is incorrect', async () => {
+    const mockUser = {
+      id: new mongoose.Types.ObjectId(),
+      email: 'test@example.com',
+      password: 'hashedPassword',
+      role: 'member'
+    };
+
+    const req = {
+      body: {
+        email: 'test@example.com',
+        password: 'WrongPassword',
+        role: 'member'
+      }
+    };
+
+    sinon.stub(User, 'findOne').returns({
+      select: sinon.stub().resolves(mockUser)
+    });
+    sinon.stub(bcrypt, 'compare').resolves(false);
+
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.spy()
+    };
+
+    await loginUser(req, res);
+
+    expect(res.status.calledWith(401)).to.be.true;
+    expect(res.json.calledWith({ message: 'Invalid email or password' })).to.be.true;
+  });
+
+  it('should return 401 if role does not match', async () => {
+    const mockUser = {
+      id: new mongoose.Types.ObjectId(),
+      email: 'test@example.com',
+      password: 'hashedPassword',
+      role: 'member'
+    };
+
+    const req = {
+      body: {
+        email: 'test@example.com',
+        password: 'Test1234',
+        role: 'eventorganizer'
+      }
+    };
+
+    sinon.stub(User, 'findOne').returns({
+      select: sinon.stub().resolves(mockUser)
+    });
+    sinon.stub(bcrypt, 'compare').resolves(true);
+
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.spy()
+    };
+
+    await loginUser(req, res);
+
+    expect(res.status.calledWith(401)).to.be.true;
+    const jsonArg = res.json.getCall(0).args[0];
+    expect(jsonArg.message).to.match(/Access denied/i);
+  });
+
+});
+
+
+//add a scenario for testing "get profile" functionality
+describe('GetProfile Function Test', () => {
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('should return user profile successfully', async () => {
+    const userId = new mongoose.Types.ObjectId();
+    const mockUser = {
+      _id: userId,
+      name: 'Test User',
+      email: 'test@example.com',
+      phone: '0412111111',
+      organizer: 'Test Org',
+      role: 'member'
+    };
+
+    sinon.stub(User, 'findById').resolves(mockUser);
+
+    const req = { user: { id: userId.toString() } };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.spy()
+    };
+
+    await getProfile(req, res);
+
+    expect(res.status.calledWith(200)).to.be.true;
+    expect(res.json.calledWithMatch({ 
+      email: 'test@example.com',
+      role: 'member'
+    })).to.be.true;
+  });
+
+  it('should return 404 if user is not found', async () => {
+    sinon.stub(User, 'findById').resolves(null);
+
+    const req = { user: { id: new mongoose.Types.ObjectId().toString() } };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.spy()
+    };
+
+    await getProfile(req, res);
+
+    expect(res.status.calledWith(404)).to.be.true;
+    expect(res.json.calledWith({ message: 'User not found' })).to.be.true;
   });
 
 });
