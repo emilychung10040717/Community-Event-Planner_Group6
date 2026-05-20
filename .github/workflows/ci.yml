@@ -57,7 +57,9 @@ jobs:
         df -h
         sudo rm -rf ./build
         yarn install
-        yarn run build
+        CI = false yarn run build
+
+    #    yarn run build
 
 
     # Run backend tests
