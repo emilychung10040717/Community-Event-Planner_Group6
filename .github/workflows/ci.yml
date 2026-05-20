@@ -57,7 +57,7 @@ jobs:
         df -h
         sudo rm -rf ./build
         yarn install
-        CI = false yarn run build
+        export CI=false && yarn run build
 
     #    yarn run build
 
