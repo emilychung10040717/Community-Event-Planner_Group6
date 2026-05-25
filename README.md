@@ -1,20 +1,21 @@
 🌟 Project Overview
-**Community Planner Event Overview: The Community Event Planner Application is designed as a centralized coordination platform for integrating all free community events within a specific area. In this application, there are three features, Event organizers, Community members, and Admin. At this version, it will be applied some functions are related to event organizers, like CRUD, login/logout and register. Other remain functions will be applied later.
+**Community Planner Event Overview: The Community Event Planner Application is designed as a centralized coordination platform for integrating all free community events within a specific area. In this application, there are three features, Event organizers, Community members, and Admin. The corresponding functions will be illustrated as follows:
 
 🏗️ Event Organizers feature:
-The application provides functions to Create, View, Update, and Delete (CRUD) events, enabling them to track real-time registrations from participants and promote events effectively through this application. A core feature is the event scheduling functionality to help organizers to clarify conflicting schedules of events, and organizers are prompted to adjust and resubmit their schedule, ensuring better coordination of events. Besides, the capacity control will be implemented for organizers. To offer comprehensive functionality, organizers will be allowed to download participant data (e.g., Excel format) to efficiently manage attendance lists
+The application provides functions to Create, View, Update, and Delete (CRUD) events, enabling them to track real-time registrations from participants and promote events effectively through this application. A core feature is the event timetable conflict checking functionality to help organizers to clarify the available schedules of events, and organizers are prompted to adjust their expected timetable whem conflicts happen, ensuring better coordination of events. Besides, the capacity control will be implemented for organizers to allow them to check the status of registration in real-time, and the system will terminate the availability of registration when the number of participants reaches the limitation.
 
 👥 Community members: 
-The application offers community members an interface to browse, search, and register for events of interest. Users can also manage their registrations by cancelling registrations when necessary.
+The application offers community members an interface to browse, search by keywords, and register for events of interest. Users can also manage their registrations by cancelling registrations when necessary. Besides, community members can browse what they have already registered from the browsing page to help them organize their events more easily.
 
 🔑 Administrators:
-are responsible for managing user accounts and assigning roles to ensure system stability and proper access control.
+Admin can browse all the users in the system. Besides, Admin is responsible for managing user accounts and assigning roles, expect for Admin, to ensure system stability and proper access control.
 
-At this current version, it will be applied some functions are related to event organizers, like CRUD, login/logout and register. Other remain functions will be applied later.
+Common Feature:
+Organizer and Community members are both allowed to adjust their personal information at any time.
 
 
 🚀 Current Development Status (v1.0)
-    Note: This version primarily focuses on the Event Organizer workflow. Other roles and advanced features are scheduled for future releases.
+    Note: This version primarily clear implement features of the event organizers, community members, and Admin. Other advanced features are scheduled for future releases.
 
 **This apps contain the following features:**
 ✅ Completed Features (Event Organizers)
@@ -26,27 +27,38 @@ At this current version, it will be applied some functions are related to event 
 * View events
 * Update events
 * Delete events
+* Event time conflicts check
+
+✅ Completed Features (Community members)
+* Register
+* Login
+* Logout
+* Update profile
+* Browse event
+* Search event
+* Register event
+* Cancel event
+
+✅ Completed Features (Admin)
+* Manage all users (CRUD)
+* Assign roles
+
 
 🗺️ Future Roadmap
-    While the current version establishes the core infrastructure, the following features are currently under development:
-    🏗️ For Event Organizers
-    * Event time schedule
-    * Adjust time table
-    * Download the list of participants
+While the current version establishes the core infrastructure, the following features are currently under development:
+🏗️ For Event Organizers
+* Download the list of participants
+  
+👥 For Community Members
+* Review participated events
+  
+🔑 For Administrators
+* Manage events
+  
+Others
+* Reset password
+* MFA
 
-    👥 For Community Members
-    * Browse event
-    * Search event
-    * Register event
-    * Cancel event
-
-    🔑 For Administrators
-    * Manage all users (CRUD)
-    * Assign roles
-
-    Others
-    * Authorization for roles
-    * Reset password
 
 💡Tech Stack:
 * Frontend: React.js, Tailwind CSS.
